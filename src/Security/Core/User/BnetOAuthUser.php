@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: fma
- * Date: 30/10/18
- * Time: 12:58
- */
-
 namespace App\Security\Core\User;
-use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUser;
+
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
-class BnetOAuthUser extends OAuthUser
+class BnetOAuthUser implements UserInterface
 {
     /** @var string $bnet_id */
     private $bnet_id;
@@ -27,21 +21,14 @@ class BnetOAuthUser extends OAuthUser
     /** @var string $api_token */
     private $api_token;
 
-    /**
-     * BnetOAuthUser constructor.
-     * @param string $bnet_id
-     * @param string $bnet_sub
-     * @param string $bnet_battletag
-     * @param string $bnet_access_token
-     */
-    public function __construct(string $bnet_id, string $bnet_sub, string $bnet_battletag, string $bnet_access_token)
-    {
-        parent::__construct($bnet_battletag);
-        $this->bnet_id = $bnet_id;
-        $this->bnet_sub = $bnet_sub;
-        $this->bnet_battletag = $bnet_battletag;
-        $this->bnet_access_token = $bnet_access_token;
-    }
+    /** @var string $username */
+    private $username;
+
+    /** @var string $password */
+    private $password;
+
+    /** @var string $plainPassword */
+    private $plainPassword;
 
     /**
      * @return string
@@ -137,4 +124,95 @@ class BnetOAuthUser extends OAuthUser
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param string $username
+     * @return BnetOAuthUser
+     */
+    public function setUsername(string $username): BnetOAuthUser
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     * @return BnetOAuthUser
+     */
+    public function setPassword(string $password): BnetOAuthUser
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlainPassword(): string
+    {
+        return $this->plainPassword;
+    }
+
+    /**
+     * @param string $plainPassword
+     * @return BnetOAuthUser
+     */
+    public function setPlainPassword(string $plainPassword): BnetOAuthUser
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRoles()
+    {
+        return array('ROLE_USER', 'ROLE_OAUTH_USER');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSalt()
+    {
+        return null;
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function eraseCredentials()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function equals(UserInterface $user)
+    {
+        return $user->getUsername() === $this->username;
+    }
+
 }

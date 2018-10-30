@@ -2,8 +2,8 @@
 #    path: /
 #    controller: App\Controller\DefaultController::index
 
-battle_net_login:
-  path: /login/check-battle-net
+security_login_check:
+    path: /login_check
 
 logout:
     path: /logout

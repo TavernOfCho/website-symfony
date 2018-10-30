@@ -2,7 +2,7 @@ security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         #in_memory: { memory: ~ }
-        hwi:
+        webservice:
             id: App\Security\Core\User\UserProvider
     firewalls:
         dev:
@@ -10,15 +10,9 @@ security:
             security: false
         main:
             anonymous: true
-            oauth:
-                resource_owners:
-                    battle_net: /login/check-battle-net
-                login_path:        /login
-                use_forward:       false
-                failure_path:      /login
-
-                oauth_user_provider:
-                    service: App\Security\Core\User\UserProvider
+            guard:
+                authenticators:
+                    - App\Security\TokenAuthenticator
             logout:
                 path:   /logout
                 target: /

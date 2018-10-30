@@ -2,22 +2,23 @@
 
 namespace App\Security\Core\User;
 
-use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
-use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Utils\ApiSDK;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
  * Class OauthUserProvider
  * @package App\Security\Core\User
  */
-class UserProvider extends OAuthUserProvider
+class UserProvider implements UserProviderInterface
 {
     /**
      * @var ApiSDK $apiSDK
      */
     private $apiSDK;
+
 
     /**
      * OauthUserProvider constructor.
@@ -28,14 +29,6 @@ class UserProvider extends OAuthUserProvider
         $this->apiSDK = $apiSDK;
     }
 
-    /**
-     * @param UserResponseInterface $response
-     * @return BnetOAuthUser|null|object
-     */
-    public function loadUserByOAuthUserResponse(UserResponseInterface $response)
-    {
-        return $this->apiSDK->generateBnetOauthUser($response);
-    }
 
     /**
      * @param UserInterface $user
@@ -58,5 +51,22 @@ class UserProvider extends OAuthUserProvider
     public function supportsClass($class)
     {
         return BnetOAuthUser::class === $class;
+    }
+
+    /**
+     * Loads the user for the given username.
+     *
+     * This method must throw UsernameNotFoundException if the user is not
+     * found.
+     *
+     * @param string $username The username
+     *
+     * @return UserInterface
+     *
+     * @throws UsernameNotFoundException if the user is not found
+     */
+    public function loadUserByUsername($username)
+    {
+        return null;
     }
 }

@@ -29,7 +29,8 @@
                     </li>
                 {% else %}
                     <li class="nav-item text-nowrap">
-                        <a class="nav-link" href="{{ hwi_oauth_login_url('battle_net') }}">Sign in</a>
+                        <a class="nav-link" href="{{ path('user_register') }}">Sign up</a>
+                        <a class="nav-link" href="{{ path('security_login') }}">Sign in</a>
                     </li>
                 {% endif %}
             </ul>
