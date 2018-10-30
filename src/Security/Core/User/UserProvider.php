@@ -2,29 +2,30 @@
 
 namespace App\Security\Core\User;
 
-use App\Entity\BnetOAuthUser;
-use App\Manager\BnetOAuthUserManager;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
-use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider as BaseOauthUserProvider;
+use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\Utils\ApiSDK;
 
 /**
  * Class OauthUserProvider
  * @package App\Security\Core\User
  */
-class OauthUserProvider extends BaseOauthUserProvider
+class UserProvider extends OAuthUserProvider
 {
-    /** @var BnetOAuthUserManager $bnetOAuthUserManager */
-    private $bnetOAuthUserManager;
+    /**
+     * @var ApiSDK $apiSDK
+     */
+    private $apiSDK;
 
     /**
      * OauthUserProvider constructor.
-     * @param BnetOAuthUserManager $bnetOAuthUserManager
+     * @param ApiSDK $apiSDK
      */
-    public function __construct(BnetOAuthUserManager $bnetOAuthUserManager)
+    public function __construct(ApiSDK $apiSDK)
     {
-        $this->bnetOAuthUserManager = $bnetOAuthUserManager;
+        $this->apiSDK = $apiSDK;
     }
 
     /**
@@ -33,18 +34,7 @@ class OauthUserProvider extends BaseOauthUserProvider
      */
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
-        $bnetOAuthUser = $this->bnetOAuthUserManager->findOrCreateUser($response);
-
-        return $this->bnetOAuthUserManager->updateFromUserResponse($bnetOAuthUser, $response);
-    }
-
-    /**
-     * @param string $username
-     * @return BnetOAuthUser
-     */
-    public function loadUserByUsername($username)
-    {
-        return $this->bnetOAuthUserManager->getRepository()->findOneByBnetId($username);
+        return $this->apiSDK->generateBnetOauthUser($response);
     }
 
     /**

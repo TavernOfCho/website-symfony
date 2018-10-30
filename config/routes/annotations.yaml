@@ -1,6 +1,6 @@
 controllers:
     resource: ../../src/Controller/
     type: annotation
-    schemes:    [https]
-    host:     'symfony_project.develop'
+#    schemes:    [https]
+#    host:     'site.wow_symfony.develop'
 

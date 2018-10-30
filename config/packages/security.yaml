@@ -3,7 +3,7 @@ security:
     providers:
         #in_memory: { memory: ~ }
         hwi:
-            id: App\Security\Core\User\OauthUserProvider
+            id: App\Security\Core\User\UserProvider
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -18,7 +18,7 @@ security:
                 failure_path:      /login
 
                 oauth_user_provider:
-                    service: App\Security\Core\User\OauthUserProvider
+                    service: App\Security\Core\User\UserProvider
             logout:
                 path:   /logout
                 target: /
