@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
+    api_key: "%env(API_KEY)%"
+    api_url: "%env(API_URL)%"
 
 services:
     # default configuration for services in *this* file
@@ -26,6 +28,9 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+        
+    App\Utils\ApiSDK:
+        arguments: ["%api_url%", "%api_key%"]
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

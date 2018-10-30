@@ -70,7 +70,10 @@ class TokenAuthenticator extends AbstractGuardAuthenticator implements Authentic
      */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        var_dump($credentials);exit;
+        var_dump($credentials);
+        $this->provider->getApiSDK()->generateBnetOauthUser($credentials);
+
+        exit;
         $user = null;
 //        $user = new BnetOAuthUser();
 //        $user

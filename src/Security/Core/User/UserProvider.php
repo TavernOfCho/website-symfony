@@ -29,7 +29,13 @@ class UserProvider implements UserProviderInterface
         $this->apiSDK = $apiSDK;
     }
 
-
+    /**
+     * @return ApiSDK
+     */
+    public function getApiSDK(): ApiSDK
+    {
+        return $this->apiSDK;
+    }
     /**
      * @param UserInterface $user
      * @return BnetOAuthUser|UserInterface
