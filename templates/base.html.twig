@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+    <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">WoW</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            {% set currentPath = app.request.attributes.get("_route") %}
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item {{ currentPath == "index" ? "active" : "" }}">
+                    <a class="nav-link" href="{{ path('index') }}">Home</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav px-3">
+                {% if app.user %}
+                    <li class="nav-item text-nowrap">
+                        <a class="nav-link" href="{{ path('logout') }}">Sign out</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item text-nowrap">
+                        <a class="nav-link" href="{{ hwi_oauth_login_url('battle_net') }}">Sign in</a>
+                    </li>
+                {% endif %}
+            </ul>
+
+        </div>
+    </nav>
+</header>
+<div class="container">
+    {% block body %}{% endblock %}
+</div>
+{% block javascripts %}{% endblock %}
+<script src="{{ asset('build/app.js') }}"></script>
+</body>
+</html>
