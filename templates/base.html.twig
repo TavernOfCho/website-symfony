@@ -40,9 +40,9 @@
         </div>
     </nav>
 </header>
-<div class="container">
+<main role="main" class="container">
     {% block body %}{% endblock %}
-</div>
+</main>
 {% block javascripts %}{% endblock %}
 <script src="{{ asset('build/app.js') }}"></script>
 </body>

@@ -4,45 +4,29 @@
 
 {% block body_class %}login-page{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('build/signin.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('build/signin.js') }}"></script>
+{% endblock %}
+
 
 {% block body %}
-    <div class="login-box">
-        <div class="login-logo">
-            <a href="{{ path('index') }}"><b>Isolonice</b>Jarvis</a>
-        </div>
-        <!-- /.login-logo -->
-        <div class="login-box-body">
-            {% if error %}
-                <div class="row">
-                    <div class="alert alert-danger" role="alert">
-                        {{ error.messageKey|trans(error.messageData, 'security') }}
-                    </div>
-                </div>
-            {% endif %}
-            <p class="login-box-msg">HELP ME I'M STUCK</p>
+    <div class="text-center">
+        {{ form_start(form, {'attr': {'class': 'form-signin'}}) }}
+        <img class="mb-4" src="{{ asset('build/images/bootstrap-solid.svg') }}" alt="" width="72" height="72">
 
-            {{ form_start(form) }}
-            <div class="form-group has-feedback">
-                {{ form_widget(form._username) }}
-                <span class="glyphicon glyphicon-user form-control-feedback"></span>
-            </div>
-            <div class="form-group has-feedback">
-                {{ form_widget(form._password) }}
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-            </div>
+        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        <label for="inputEmail" class="sr-only">Username</label>
+        {{ form_widget(form._username) }}
 
-            <div class="row">
-                <div class="col-xs-6 col-xs-offset-6">
-                    <button type="submit" class="btn btn-primary btn-block btn-flat">
-                        <span class="fa fa-lock"></span> Se connecter
-                    </button>
-                </div>
-            </div>
-            {{ form_end(form) }}
-            <a href="#" class="text-center">Mot de passe oublié</a>
-            <br>
-            <a href="{{ path('user_register') }}" class="text-center">S'inscrire</a>
-        </div>
-        <!-- /.login-box-body -->
+        <label for="inputPassword" class="sr-only">Password</label>
+        {{ form_widget(form._password) }}
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        {{ form_end(form) }}
+
     </div>
 {% endblock %}
