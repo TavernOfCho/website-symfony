@@ -3,6 +3,10 @@
 @import '~select2/dist/css/select2.css';
 @import '~select2-bootstrap-theme/dist/select2-bootstrap.min.css';
 
-body > .container {
-  padding-top: 60px;
+body {
+    background-color: lightgray;
+
+    > .container {
+        padding-top: 60px;
+    }
 }
