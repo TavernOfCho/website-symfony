@@ -48,6 +48,12 @@ class RequestSubscriber implements EventSubscriberInterface
             return;
         }
 
+        // Current Date less 5 min
+        $currentDate = (new \DateTime())->sub(new \DateInterval("PT5M"));
+        if ($currentDate > $user->getJwtTokenExpiration()) {
+            dump("TODO REFRESH TOKEN");
+        }
+
         dump($user);
 
     }

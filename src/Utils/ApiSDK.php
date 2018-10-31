@@ -34,19 +34,17 @@ class ApiSDK
         }
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-        $params = [
-            'username' => $credentials['_username'],
-            'password' => $credentials['_password'],
-//            'api_key' => $this->api_key."1",
-            'api_key' => $this->api_key,
-        ];
-
-        $url = sprintf("%s/users/security?%s", $this->api_url, http_build_query($params));
-
-        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt_array($ch, [
+            CURLOPT_HTTPHEADER => ['Accept: application/ld+json'],
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => sprintf("%s/users/security?%s", $this->api_url, http_build_query([
+                'username' => $credentials['_username'],
+                'password' => $credentials['_password'],
+//                'api_key' => $this->api_key."1",
+                'api_key' => $this->api_key,
+            ]))
+        ]);
 
         $response = curl_exec($ch);
 
