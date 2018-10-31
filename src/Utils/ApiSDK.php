@@ -61,7 +61,7 @@ class ApiSDK
             $user = new BnetOAuthUser();
             $data = $data[0];
 
-            return $user->setUsername($data['username'])
+            $user->setUsername($data['username'])
                 ->setBnetAccessToken($data['bnetAccessToken'])
                 ->setBnetBattletag($data['bnetBattletag'])
                 ->setBnetId($data['bnetId'])
@@ -69,20 +69,53 @@ class ApiSDK
                 ->setPassword($data['password'])
                 ->setRoles($data['roles'])
                 ->setEnabled($data['enabled']);
+
+            if (false === $this->jwtConnect($user, $credentials)) {
+                return null;
+            }
+
+            return $user;
         }
 
         return null;
     }
 
-    public function getUser(string $username)
+    /**
+     * @param BnetOAuthUser $user
+     * @param array $credentials
+     * @return bool
+     */
+    protected function jwtConnect(BnetOAuthUser $user, array $credentials)
     {
-        
-     }
-
-    protected function sendGETBasic($url)
-    {
+        $url = sprintf("%s/login_check", $this->api_url);
         $ch = curl_init();
 
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => json_encode([
+                'username' => $credentials['_username'],
+                'password' => $credentials['_password'],
+            ]),
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+            ],
+        ]);
+
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        if (null === $response = json_decode($response, true)) {
+            return false;
+        }
+
+        var_dump($response);
+        $expiration = (new \DateTime())->add(new \DateInterval("PT3600S"));
+        $user->setJwtToken($response['token'])->setJwtTokenExpiration($expiration);
+
+        return true;
     }
 
     /**
