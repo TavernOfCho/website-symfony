@@ -131,8 +131,42 @@ class ApiSDK
             return false;
         }
 
-        $expiration = (new \DateTime())->add(new \DateInterval("PT3600S"));
-        $user->setJwtToken($response['token'])->setJwtTokenExpiration($expiration);
+        $user
+            ->setJwtToken($response['token'])
+            ->setJwtRefreshToken($response['refresh_token'])
+            ->resetTokenExpiration();
+
+        return true;
+    }
+
+    /**
+     * @param BnetOAuthUser $user
+     * @return bool
+     */
+    public function jwtRefreshToken(BnetOAuthUser $user)
+    {
+        $url = sprintf("%s/token/refresh", $this->api_url);
+        $ch = curl_init();
+
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => ['refresh_token' => $user->getJwtRefreshToken()],
+        ]);
+
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        if (null === $response = json_decode($response, true)) {
+            return false;
+        }
+
+        $user
+            ->setJwtToken($response['token'])
+            ->setJwtRefreshToken($response['refresh_token'])
+            ->resetTokenExpiration();
 
         return true;
     }

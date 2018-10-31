@@ -37,10 +37,13 @@ class RequestSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param GetResponseEvent $event
+     */
     public function onKernelRequest(GetResponseEvent $event)
     {
+        // don't do anything if it's not the master request
         if (!$event->isMasterRequest()) {
-            // don't do anything if it's not the master request
             return;
         }
 
@@ -51,11 +54,8 @@ class RequestSubscriber implements EventSubscriberInterface
         // Current Date less 5 min
         $currentDate = (new \DateTime())->sub(new \DateInterval("PT5M"));
         if ($currentDate > $user->getJwtTokenExpiration()) {
-            dump("TODO REFRESH TOKEN");
+            $this->apiSDK->jwtRefreshToken($user);
         }
-
-        dump($user);
-
     }
 
     /**

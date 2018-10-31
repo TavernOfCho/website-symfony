@@ -24,9 +24,6 @@ class BnetOAuthUser implements UserInterface
     /** @var string $password */
     private $password;
 
-    /** @var string $plainPassword */
-    private $plainPassword;
-
     /** @var array $roles */
     private $roles;
 
@@ -38,6 +35,12 @@ class BnetOAuthUser implements UserInterface
 
     /** @var \DateTime $jwt_token_expiration */
     private $jwt_token_expiration;
+
+    /** @var string $jwt_refresh_token */
+    private $jwt_refresh_token;
+
+    /** @var \DateTime $jwt_refresh_token_expiration */
+    private $jwt_refresh_token_expiration;
 
     /**
      * @return string
@@ -230,6 +233,44 @@ class BnetOAuthUser implements UserInterface
     }
 
     /**
+     * @return string
+     */
+    public function getJwtRefreshToken(): ?string
+    {
+        return $this->jwt_refresh_token;
+    }
+
+    /**
+     * @param string $jwt_refresh_token
+     * @return BnetOAuthUser
+     */
+    public function setJwtRefreshToken(?string $jwt_refresh_token): BnetOAuthUser
+    {
+        $this->jwt_refresh_token = $jwt_refresh_token;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getJwtRefreshTokenExpiration(): ?\DateTime
+    {
+        return $this->jwt_refresh_token_expiration;
+    }
+
+    /**
+     * @param \DateTime $jwt_refresh_token_expiration
+     * @return BnetOAuthUser
+     */
+    public function setJwtRefreshTokenExpiration(?\DateTime $jwt_refresh_token_expiration): BnetOAuthUser
+    {
+        $this->jwt_refresh_token_expiration = $jwt_refresh_token_expiration;
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getSalt()
@@ -253,4 +294,14 @@ class BnetOAuthUser implements UserInterface
         return $user->getUsername() === $this->username;
     }
 
+    /**
+     * @return BnetOAuthUser
+     */
+    public function resetTokenExpiration()
+    {
+        $this->setJwtTokenExpiration((new \DateTime())->add(new \DateInterval("PT3600S")));
+        $this->setJwtRefreshTokenExpiration((new \DateTime())->add(new \DateInterval("P1M")));
+
+        return $this;
+    }
 }
