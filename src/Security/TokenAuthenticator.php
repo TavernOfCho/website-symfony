@@ -57,10 +57,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator implements Authentic
             return null;
         }
 
-        $username = trim($request->request->get('_username'));
-        $password = $request->request->get('_password');
-
-        return ['username' => $username, 'password' => $password];
+        return $request->request->get('login_form');
     }
 
     /**

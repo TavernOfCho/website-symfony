@@ -29,13 +29,17 @@ class ApiSDK
      */
     public function generateBnetOauthUser(array $credentials)
     {
+        if (!isset($credentials['_username'], $credentials['_password'])) {
+            return null;
+        }
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         $params = [
-            'username' => $credentials['username'],
-            'password' => $credentials['password'],
+            'username' => $credentials['_username'],
+            'password' => $credentials['_password'],
 //            'api_key' => $this->api_key."1",
             'api_key' => $this->api_key,
         ];
