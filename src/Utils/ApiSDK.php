@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use App\Security\Core\User\BnetOAuthUser;
+
 class ApiSDK
 {
     /** @var string $api_url */
@@ -23,40 +25,49 @@ class ApiSDK
 
     /**
      * @param array $credentials
+     * @return BnetOAuthUser|null
      */
     public function generateBnetOauthUser(array $credentials)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         $params = [
             'username' => $credentials['username'],
             'password' => $credentials['password'],
+//            'api_key' => $this->api_key."1",
             'api_key' => $this->api_key,
         ];
 
         $url = sprintf("%s/users/security?%s", $this->api_url, http_build_query($params));
-        var_dump($url);
 
         curl_setopt($ch, CURLOPT_URL, $url);
 
         $response = curl_exec($ch);
-        $err = curl_error($ch);
 
         curl_close($ch);
 
-        var_dump($response);exit;
+        if (null === $response = json_decode($response, true)) {
+            return null;
+        }
 
+        $data = $response['hydra:member'];
+        if (is_array($data) && count($data) > 0) {
+            $user = new BnetOAuthUser();
+            $data = $data[0];
 
-//        $data = $response->getData();
-//        $user = new BnetOAuthUser($data['id'], $data['sub'], $data['battletag'], $response->getAccessToken());
-//
-//        $user->setBnetId($data['id'])
-//            ->setBnetSub($data['sub'])
-//            ->setBnetBattletag($data['battletag'])
-//            ->setBnetAccessToken($response->getAccessToken());
-//
-//        return $user;
+            return $user->setUsername($data['username'])
+                ->setBnetAccessToken($data['bnetAccessToken'])
+                ->setBnetBattletag($data['bnetBattletag'])
+                ->setBnetId($data['bnetId'])
+                ->setBnetSub($data['bnetSub'])
+                ->setPassword($data['password'])
+                ->setRoles($data['roles'])
+                ->setEnabled($data['enabled']);
+        }
+
+        return null;
     }
 
     public function getUser(string $username)

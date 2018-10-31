@@ -1,6 +1,7 @@
 <?php
 namespace App\Security;
 
+use App\Security\Core\User\BnetOAuthUser;
 use App\Security\Core\User\UserProvider;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,35 +71,18 @@ class TokenAuthenticator extends AbstractGuardAuthenticator implements Authentic
      */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        var_dump($credentials);
-        $this->provider->getApiSDK()->generateBnetOauthUser($credentials);
-
-        exit;
-        $user = null;
-//        $user = new BnetOAuthUser();
-//        $user
-//            ->setUsername($credentials['username'])
-//            ->setFirstName($credentials['firstname'])
-//            ->setLastName($credentials['lastname'])
-//            ->setFullname($credentials['fullname'])
-//            ->setEmail($credentials['email'])
-//            ->setToken($credentials['token'])
-//        ;
-
-        return $user;
+        return $this->provider->getApiSDK()->generateBnetOauthUser($credentials);
     }
 
     /**
      * step 3
      * @param mixed $credentials
-     * @param UserInterface $user
+     * @param BnetOAuthUser|UserInterface $user
      * @return bool
      */
     public function checkCredentials($credentials, UserInterface $user)
     {
-        var_dump($credentials);
-        exit;
-        return $this->encoder->isPasswordValid($user, $credentials['password']);
+        return $user->isEnabled();
     }
 
     /**

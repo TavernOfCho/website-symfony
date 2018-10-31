@@ -18,9 +18,6 @@ class BnetOAuthUser implements UserInterface
     /** @var string $bnet_access_token */
     private $bnet_access_token;
 
-    /** @var string $api_token */
-    private $api_token;
-
     /** @var string $username */
     private $username;
 
@@ -30,10 +27,22 @@ class BnetOAuthUser implements UserInterface
     /** @var string $plainPassword */
     private $plainPassword;
 
+    /** @var array $roles */
+    private $roles;
+
+    /** @var bool $enabled */
+    private $enabled;
+
+    /** @var string $jwt_token */
+    private $jwt_token;
+
+    /** @var \DateTime $jwt_token_expiration */
+    private $jwt_token_expiration;
+
     /**
      * @return string
      */
-    public function getBnetId(): string
+    public function getBnetId(): ?string
     {
         return $this->bnet_id;
     }
@@ -42,7 +51,7 @@ class BnetOAuthUser implements UserInterface
      * @param string $bnet_id
      * @return BnetOAuthUser
      */
-    public function setBnetId(string $bnet_id): BnetOAuthUser
+    public function setBnetId(?string $bnet_id): BnetOAuthUser
     {
         $this->bnet_id = $bnet_id;
 
@@ -52,7 +61,7 @@ class BnetOAuthUser implements UserInterface
     /**
      * @return string
      */
-    public function getBnetSub(): string
+    public function getBnetSub(): ?string
     {
         return $this->bnet_sub;
     }
@@ -61,7 +70,7 @@ class BnetOAuthUser implements UserInterface
      * @param string $bnet_sub
      * @return BnetOAuthUser
      */
-    public function setBnetSub(string $bnet_sub): BnetOAuthUser
+    public function setBnetSub(?string $bnet_sub): BnetOAuthUser
     {
         $this->bnet_sub = $bnet_sub;
 
@@ -71,7 +80,7 @@ class BnetOAuthUser implements UserInterface
     /**
      * @return string
      */
-    public function getBnetBattletag(): string
+    public function getBnetBattletag(): ?string
     {
         return $this->bnet_battletag;
     }
@@ -80,7 +89,7 @@ class BnetOAuthUser implements UserInterface
      * @param string $bnet_battletag
      * @return BnetOAuthUser
      */
-    public function setBnetBattletag(string $bnet_battletag): BnetOAuthUser
+    public function setBnetBattletag(?string $bnet_battletag): BnetOAuthUser
     {
         $this->bnet_battletag = $bnet_battletag;
 
@@ -90,7 +99,7 @@ class BnetOAuthUser implements UserInterface
     /**
      * @return string
      */
-    public function getBnetAccessToken(): string
+    public function getBnetAccessToken(): ?string
     {
         return $this->bnet_access_token;
     }
@@ -99,28 +108,9 @@ class BnetOAuthUser implements UserInterface
      * @param string $bnet_access_token
      * @return BnetOAuthUser
      */
-    public function setBnetAccessToken(string $bnet_access_token): BnetOAuthUser
+    public function setBnetAccessToken(?string $bnet_access_token): BnetOAuthUser
     {
         $this->bnet_access_token = $bnet_access_token;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getApiToken(): string
-    {
-        return $this->api_token;
-    }
-
-    /**
-     * @param string $api_token
-     * @return BnetOAuthUser
-     */
-    public function setApiToken(string $api_token): BnetOAuthUser
-    {
-        $this->api_token = $api_token;
 
         return $this;
     }
@@ -164,30 +154,79 @@ class BnetOAuthUser implements UserInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function getPlainPassword(): string
+    public function getRoles()
     {
-        return $this->plainPassword;
+        return $this->roles;
     }
 
     /**
-     * @param string $plainPassword
+     * @param array $roles
      * @return BnetOAuthUser
      */
-    public function setPlainPassword(string $plainPassword): BnetOAuthUser
+    public function setRoles(array $roles): BnetOAuthUser
     {
-        $this->plainPassword = $plainPassword;
+        $this->roles = $roles;
 
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
-    public function getRoles()
+    public function isEnabled(): bool
     {
-        return array('ROLE_USER', 'ROLE_OAUTH_USER');
+        return $this->enabled;
+    }
+
+    /**
+     * @param bool $enabled
+     * @return BnetOAuthUser
+     */
+    public function setEnabled(bool $enabled): BnetOAuthUser
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getJwtToken(): ?string
+    {
+        return $this->jwt_token;
+    }
+
+    /**
+     * @param string $jwt_token
+     * @return BnetOAuthUser
+     */
+    public function setJwtToken(string $jwt_token): BnetOAuthUser
+    {
+        $this->jwt_token = $jwt_token;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getJwtTokenExpiration(): ?\DateTime
+    {
+        return $this->jwt_token_expiration;
+    }
+
+    /**
+     * @param \DateTime $jwt_token_expiration
+     * @return BnetOAuthUser
+     */
+    public function setJwtTokenExpiration(?\DateTime $jwt_token_expiration): BnetOAuthUser
+    {
+        $this->jwt_token_expiration = $jwt_token_expiration;
+
+        return $this;
     }
 
     /**
@@ -197,7 +236,6 @@ class BnetOAuthUser implements UserInterface
     {
         return null;
     }
-
 
     /**
      * {@inheritdoc}
