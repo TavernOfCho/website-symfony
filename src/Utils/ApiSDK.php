@@ -33,24 +33,7 @@ class ApiSDK
             return null;
         }
 
-        $ch = curl_init();
-
-        curl_setopt_array($ch, [
-            CURLOPT_HTTPHEADER => ['Accept: application/ld+json'],
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => sprintf("%s/users/security?%s", $this->api_url, http_build_query([
-                'username' => $credentials['_username'],
-                'password' => $credentials['_password'],
-//                'api_key' => $this->api_key."1",
-                'api_key' => $this->api_key,
-            ]))
-        ]);
-
-        $response = curl_exec($ch);
-
-        curl_close($ch);
-
-        if (null === $response = json_decode($response, true)) {
+        if (null === $response = $this->fetchUserSecurity($credentials['_username'], $credentials['_password'])) {
             return null;
         }
 
@@ -76,6 +59,45 @@ class ApiSDK
         }
 
         return null;
+    }
+
+    /**
+     * @param array $credentials
+     * @return BnetOAuthUser|null
+     */
+    public function createAccount(array $credentials)
+    {
+        if (!isset($credentials['username'], $credentials['email'], $credentials['plainPassword'])) {
+            return null;
+        }
+
+        $response = $this->fetchUserSecurity($credentials['username'], $credentials['plainPassword']);
+
+        //Existing user
+        if (null !== $response && isset($response['hydra:member']) && count($response['hydra:member']) > 0) {
+            return null;
+        }
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => sprintf("%s/register", $this->api_url),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => json_encode([
+                'username' => $credentials['username'],
+                'password' => $credentials['plainPassword'],
+            ]),
+            CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+        ]);
+
+        curl_exec($curl);
+        curl_close($curl);
+
+        return $this->generateBnetOauthUser([
+            '_username' => $credentials['username'],
+            '_password' => $credentials['plainPassword'],
+        ]);
     }
 
     /**
@@ -109,7 +131,6 @@ class ApiSDK
             return false;
         }
 
-        var_dump($response);
         $expiration = (new \DateTime())->add(new \DateInterval("PT3600S"));
         $user->setJwtToken($response['token'])->setJwtTokenExpiration($expiration);
 
@@ -117,31 +138,33 @@ class ApiSDK
     }
 
     /**
-     * @param string $url
-     * @return array
+     * @param string $username
+     * @param string $password
+     * @return mixed|null
      */
-    protected function sendGET($url)
+    private function fetchUserSecurity(string $username, string $password)
     {
-        $url = str_replace(' ', '%20', $url);
         $ch = curl_init();
-        $authorization = sprintf("Authorization: Bearer %s", $this->generateKey($url));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', $authorization]);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $data = curl_exec($ch);
+
+        curl_setopt_array($ch, [
+            CURLOPT_HTTPHEADER => ['Accept: application/ld+json'],
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => sprintf("%s/users/security?%s", $this->api_url, http_build_query([
+                'username' => $username,
+                'password' => $password,
+                'api_key' => $this->api_key,
+            ]))
+        ]);
+
+        $response = curl_exec($ch);
+
         curl_close($ch);
 
-        return json_decode($data, true);
-    }
+        if (null === $response = json_decode($response, true)) {
+            return null;
+        }
 
-    /**
-     * @param string $url
-     * @param string $body
-     * @return string
-     */
-    private function generateKey($url, $body = "")
-    {
-        return $body;
+        return $response;
     }
 
 }

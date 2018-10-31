@@ -118,7 +118,7 @@ class BnetOAuthUser implements UserInterface
     /**
      * @return string
      */
-    public function getUsername(): string
+    public function getUsername(): ?string
     {
         return $this->username;
     }
@@ -127,7 +127,7 @@ class BnetOAuthUser implements UserInterface
      * @param string $username
      * @return BnetOAuthUser
      */
-    public function setUsername(string $username): BnetOAuthUser
+    public function setUsername(?string $username): BnetOAuthUser
     {
         $this->username = $username;
 
@@ -137,7 +137,7 @@ class BnetOAuthUser implements UserInterface
     /**
      * @return string
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -146,7 +146,7 @@ class BnetOAuthUser implements UserInterface
      * @param string $password
      * @return BnetOAuthUser
      */
-    public function setPassword(string $password): BnetOAuthUser
+    public function setPassword(?string $password): BnetOAuthUser
     {
         $this->password = $password;
 
@@ -175,7 +175,7 @@ class BnetOAuthUser implements UserInterface
     /**
      * @return bool
      */
-    public function isEnabled(): bool
+    public function isEnabled(): ?bool
     {
         return $this->enabled;
     }
@@ -184,7 +184,7 @@ class BnetOAuthUser implements UserInterface
      * @param bool $enabled
      * @return BnetOAuthUser
      */
-    public function setEnabled(bool $enabled): BnetOAuthUser
+    public function setEnabled(?bool $enabled): BnetOAuthUser
     {
         $this->enabled = $enabled;
 
@@ -203,7 +203,7 @@ class BnetOAuthUser implements UserInterface
      * @param string $jwt_token
      * @return BnetOAuthUser
      */
-    public function setJwtToken(string $jwt_token): BnetOAuthUser
+    public function setJwtToken(?string $jwt_token): BnetOAuthUser
     {
         $this->jwt_token = $jwt_token;
 
