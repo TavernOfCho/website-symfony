@@ -35,7 +35,7 @@ class WowCollectionSDK
         $this->client = new Client([
             'verify' => false,
             'base_uri' => $api_url,
-            'timeout' => 10,
+            'timeout' => 30,
         ]);
     }
 
@@ -43,7 +43,15 @@ class WowCollectionSDK
 
     public function getRealms()
     {
+        $response = $this->client->request('GET', '/realms', [
+            'headers' => $this->getBasicJsonHeader()
+        ]);
 
+        if (!$this->isStatusValid($response)) {
+            return null;
+        }
+
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     /* Security */
@@ -227,5 +235,14 @@ class WowCollectionSDK
     private function isStatusValid(Response $response)
     {
         return $response->getStatusCode() === 200;
+    }
+
+    private function getBasicJsonHeader()
+    {
+        return [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/ld+json',
+            'Authorization' => 'Bearer ' . $this->getUser()->getJwtToken()
+        ];
     }
 }
