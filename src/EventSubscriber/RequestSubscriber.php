@@ -3,14 +3,14 @@
 namespace App\EventSubscriber;
 
 use App\Security\Core\User\BnetOAuthUser;
-use App\Utils\ApiSDK;
+use App\Utils\WowCollectionSDK;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class RequestSubscriber implements EventSubscriberInterface
 {
-    /** @var ApiSDK $apiSDK */
+    /** @var WowCollectionSDK $apiSDK */
     private $apiSDK;
 
     /** @var TokenStorageInterface $tokenStorage */
@@ -18,10 +18,10 @@ class RequestSubscriber implements EventSubscriberInterface
 
     /**
      * RequestSubscriber constructor.
-     * @param ApiSDK $apiSDK
+     * @param WowCollectionSDK $apiSDK
      * @param TokenStorageInterface $tokenStorage
      */
-    public function __construct(ApiSDK $apiSDK, TokenStorageInterface $tokenStorage)
+    public function __construct(WowCollectionSDK $apiSDK, TokenStorageInterface $tokenStorage)
     {
         $this->apiSDK = $apiSDK;
         $this->tokenStorage = $tokenStorage;

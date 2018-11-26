@@ -29,8 +29,10 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
         
-    App\Utils\ApiSDK:
-        arguments: ["%api_url%", "%api_key%"]
+    App\Utils\WowCollectionSDK:
+        arguments:
+            $api_url: "%api_url%"
+            $api_key: "%api_key%"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

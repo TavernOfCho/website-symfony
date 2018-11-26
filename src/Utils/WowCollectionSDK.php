@@ -3,25 +3,50 @@
 namespace App\Utils;
 
 use App\Security\Core\User\BnetOAuthUser;
+use GuzzleHttp\Psr7\Response;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use GuzzleHttp\Client;
 
-class ApiSDK
+class WowCollectionSDK
 {
+    /** @var TokenStorageInterface $tokenStorage */
+    private $tokenStorage;
+
     /** @var string $api_url */
     private $api_url;
 
     /** @var string $api_key */
     private $api_key;
 
+    /** @var Client $client */
+    private $client;
+
     /**
      * ApiSDK constructor.
+     * @param TokenStorageInterface $tokenStorage
      * @param string $api_url
      * @param string $api_key
      */
-    public function __construct(string $api_url, string $api_key)
+    public function __construct(TokenStorageInterface $tokenStorage, string $api_url, string $api_key)
     {
+        $this->tokenStorage = $tokenStorage;
         $this->api_url = $api_url;
         $this->api_key = $api_key;
+        $this->client = new Client([
+            'verify' => false,
+            'base_uri' => $api_url,
+            'timeout' => 10,
+        ]);
     }
+
+    /* API Endpoints */
+
+    public function getRealms()
+    {
+
+    }
+
+    /* Security */
 
     /**
      * @param array $credentials
@@ -78,21 +103,20 @@ class ApiSDK
             return null;
         }
 
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf("%s/register", $this->api_url),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => json_encode([
+        $response = $this->client->request('POST', '/register', [
+            'headers' => [
+                'Content-Type' => 'application/json'
+            ],
+            'json' => [
                 'username' => $credentials['username'],
                 'password' => $credentials['plainPassword'],
-            ]),
-            CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+            ],
         ]);
 
-        curl_exec($curl);
-        curl_close($curl);
+
+        if (!$this->isStatusValid($response)) {
+            return null;
+        }
 
         return $this->generateBnetOauthUser([
             '_username' => $credentials['username'],
@@ -107,36 +131,7 @@ class ApiSDK
      */
     protected function jwtConnect(BnetOAuthUser $user, array $credentials)
     {
-        $url = sprintf("%s/login_check", $this->api_url);
-        $ch = curl_init();
-
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => json_encode([
-                'username' => $credentials['_username'],
-                'password' => $credentials['_password'],
-            ]),
-            CURLOPT_HTTPHEADER => [
-                "Content-Type: application/json",
-            ],
-        ]);
-
-        $response = curl_exec($ch);
-
-        curl_close($ch);
-
-        if (null === $response = json_decode($response, true)) {
-            return false;
-        }
-
-        $user
-            ->setJwtToken($response['token'])
-            ->setJwtRefreshToken($response['refresh_token'])
-            ->resetTokenExpiration();
-
-        return true;
+        return $this->sendToken($user, $credentials);
     }
 
     /**
@@ -145,23 +140,35 @@ class ApiSDK
      */
     public function jwtRefreshToken(BnetOAuthUser $user)
     {
-        $url = sprintf("%s/token/refresh", $this->api_url);
-        $ch = curl_init();
+        return $this->sendToken($user);
+    }
 
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => ['refresh_token' => $user->getJwtRefreshToken()],
-        ]);
+    /**
+     * @param BnetOAuthUser $user
+     * @param array|null $credentials
+     * @return bool
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    private function sendToken(BnetOAuthUser $user, array $credentials = null)
+    {
+        if (is_array($credentials)) {
+            $response = $this->client->request('POST', '/login_check', [
+                'json' => [
+                    'username' => $credentials['_username'],
+                    'password' => $credentials['_password'],
+                ]
+            ]);
+        } else {
+            $response = $this->client->request('POST', '/token/refresh', [
+                'body' => sprintf('refresh_token="%s"', $user->getJwtRefreshToken()),
+            ]);
+        }
 
-        $response = curl_exec($ch);
-
-        curl_close($ch);
-
-        if (null === $response = json_decode($response, true)) {
+        if (!$this->isStatusValid($response)) {
             return false;
         }
+
+        $response = json_decode($response->getBody()->getContents(), true);
 
         $user
             ->setJwtToken($response['token'])
@@ -176,29 +183,49 @@ class ApiSDK
      * @param string $password
      * @return mixed|null
      */
-    private function fetchUserSecurity(string $username, string $password)
+    public function fetchUserSecurity(string $username, string $password)
     {
-        $ch = curl_init();
-
-        curl_setopt_array($ch, [
-            CURLOPT_HTTPHEADER => ['Accept: application/ld+json'],
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => sprintf("%s/users/security?%s", $this->api_url, http_build_query([
+        $response = $this->client->request('GET', '/users/security', [
+            'query' => [
                 'username' => $username,
                 'password' => $password,
                 'api_key' => $this->api_key,
-            ]))
+            ],
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/ld+json'
+            ]
         ]);
 
-        $response = curl_exec($ch);
-
-        curl_close($ch);
-
-        if (null === $response = json_decode($response, true)) {
+        if (!$this->isStatusValid($response)) {
             return null;
         }
 
-        return $response;
+        return json_decode($response->getBody()->getContents(), true);
     }
 
+    /**
+     * @return BnetOAuthUser|null|object|string
+     */
+    private function getUser()
+    {
+        if (null === $token = $this->tokenStorage->getToken()) {
+            return null;
+        }
+
+        if (!is_object($user = $token->getUser())) {
+            return null;
+        }
+
+        return $user;
+    }
+
+    /**
+     * @param Response $response
+     * @return bool
+     */
+    private function isStatusValid(Response $response)
+    {
+        return $response->getStatusCode() === 200;
+    }
 }
