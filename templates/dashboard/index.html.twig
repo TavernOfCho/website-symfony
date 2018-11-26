@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello !{% endblock %}
+
+{% block body %}
+    {{ include('parts/page_header.html.twig', {
+        'img_class': 'bg-battle-pet-horde',
+        'title': 'Dashboard'
+    }) }}
+
+    {{ parent() }}
+{% endblock %}
+
+{% block subbody %}
+    <h1 class="h3 mb-3 font-weight-normal">Please select your informations</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.realm) }}
+    {{ form_row(form.character_name) }}
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+
+    {{ form_end(form) }}
+{% endblock %}

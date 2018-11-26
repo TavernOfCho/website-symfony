@@ -7,42 +7,56 @@
     <link rel="stylesheet" href="{{ asset('build/app.css') }}">
 
 </head>
-<body>
+<body class="sidebar-collapse">
 <header>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="#">WoW</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
-                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            {% set currentPath = app.request.attributes.get("_route") %}
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item {{ currentPath == "index" ? "active" : "" }}">
-                    <a class="nav-link" href="{{ path('index') }}">Home</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav px-3">
-                {% if app.user %}
-                    <li class="nav-item text-nowrap">
-                        <a class="nav-link" href="{{ path('logout') }}">Sign out</a>
+    <nav class="navbar navbar-expand-lg bg-primary fixed-top {% block navbar_class %}navbar-transparent{% endblock %}"
+         color-on-scroll="400">
+        <div class="container">
+            <div class="navbar-translate">
+                <a class="navbar-brand" href="{{ path('index') }}">WoWCollection</a>
+                <button class="navbar-toggler navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navigation" aria-controls="navigation-index" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse justify-content-end" id="navigation"
+                 data-nav-image="{{ asset('build/images/blurred-image-1.jpg') }}">
+                {% set currentPath = app.request.attributes.get("_route") %}
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item {{ currentPath == "index" ? "active" : "" }}">
+                        <a class="nav-link" href="{{ path('index') }}">Home</a>
                     </li>
-                {% else %}
-                    <li class="nav-item text-nowrap">
-                        <a class="nav-link" href="{{ path('user_register') }}">Sign up</a>
-                    </li>
-                    <li class="nav-item text-nowrap">
-                        <a class="nav-link" href="{{ path('security_login') }}">Sign in</a>
-                    </li>
-                {% endif %}
-            </ul>
-
+                </ul>
+                <ul class="navbar-nav px-3">
+                    {% if app.user %}
+                        <li class="nav-item text-nowrap">
+                            <a class="nav-link" href="{{ path('logout') }}">Sign out</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item text-nowrap">
+                            <a class="nav-link" href="{{ path('user_register') }}">Sign up</a>
+                        </li>
+                        <li class="nav-item text-nowrap">
+                            <a class="nav-link" href="{{ path('security_login') }}">Sign in</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
     </nav>
+
 </header>
-<main role="main" class="container">
-    {% block body %}{% endblock %}
-</main>
+<div class="wrapper">
+    {% block body %}
+        <div class="section">
+            <div class="container">
+                {% block subbody %}{% endblock %}
+            </div>
+        </div>
+    {% endblock body %}
+</div>
+
 {% block javascripts %}{% endblock %}
 <script src="{{ asset('build/app.js') }}"></script>
 </body>

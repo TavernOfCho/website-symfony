@@ -2,9 +2,40 @@
 @import '~font-awesome/css/font-awesome.css';
 @import '~select2/dist/css/select2.css';
 @import '~select2-bootstrap-theme/dist/select2-bootstrap.min.css';
+@import "now-ui-kit";
 
-body {
-    > .container {
-        padding-top: 60px;
+html, body {
+    height: 100%;
+}
+
+div.wrapper {
+    height: inherit;
+
+    .section.section-signup {
+        background-size: cover;
+        background: url('../img/bg11.jpg') bottom center;
+        height: inherit;
     }
 }
+
+body > .container {
+    padding-top: 60px;
+}
+
+.select2-container--bootstrap {
+    .select2-selection--single {
+        .select2-selection__rendered {
+            padding: 4px 18px 10px 8px;
+        }
+    }
+
+    .select2-selection {
+        height: 38px;
+
+    }
+}
+
+.bg-battle-pet-horde {
+    background-image: url('../img/battle-pet-horde.jpg');
+}
+

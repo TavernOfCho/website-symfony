@@ -1,39 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription{% endblock %}
+{% block title %}Register{% endblock %}
 
-
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('build/signin.css') }}">
-{% endblock %}
-
-{% block javascripts %}
-    <script src="{{ asset('build/signin.js') }}"></script>
-{% endblock %}
-
+{% block navbar_class %}{% endblock %}
 
 {% block body %}
-    <div class="text-center">
-        {{ form_start(form, {'attr': {'class': 'form-signin'}}) }}
-        <img class="mb-4" src="{{ asset('build/images/bootstrap-solid.svg') }}" alt="" width="72" height="72">
-
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        <label for="inputUsername" class="sr-only">Username</label>
-        {{ form_widget(form.username) }}
-        {{ form_errors(form.username) }}
-        <label for="inputEmail" class="sr-only">Email</label>
-        {{ form_widget(form.email) }}
-        {{ form_errors(form.email) }}
-
-        <label for="inputPassword" class="sr-only">Password</label>
-        {{ form_widget(form.plainPassword.children.first) }}
-        {{ form_errors(form.plainPassword.children.first) }}
-        <label for="inputPassword" class="sr-only">Repeat Password</label>
-        {{ form_widget(form.plainPassword.children.second) }}
-        {{ form_errors(form.plainPassword.children.second) }}
-
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
-        {{ form_end(form) }}
-
+    <div class="section section-signup">
+        <div class="container">
+            <div class="row">
+                <div class="card card-signup" data-background-color="orange">
+                    {{ form_start(form) }}
+                    <div class="card-header text-center">
+                        <h3 class="card-title title-up">Sign Up</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group no-border">
+                            {{ form_widget(form.username) }}
+                            {{ form_errors(form.username) }}
+                        </div>
+                        <div class="input-group no-border">
+                            {{ form_widget(form.email) }}
+                            {{ form_errors(form.email) }}
+                        </div>
+                        <div class="input-group no-border">
+                            {{ form_widget(form.plainPassword.children.first) }}
+                            {{ form_errors(form.plainPassword.children.first) }}
+                        </div>
+                        <div class="input-group no-border">
+                            {{ form_widget(form.plainPassword.children.second) }}
+                            {{ form_errors(form.plainPassword.children.second) }}
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button class="btn btn-neutral btn-round btn-lg" type="submit">Sign up</button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+            <div class="col text-center">
+                <a href="{{ path('security_login') }}" class="btn btn-simple btn-round btn-white btn-lg" target="_blank">
+                    View Login Page
+                </a>
+            </div>
+        </div>
     </div>
 {% endblock %}
