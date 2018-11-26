@@ -22,22 +22,22 @@ class DashboardController extends AbstractController
      */
     public function index(Request $request, WowCollectionSDK $wowCollectionSDK)
     {
-//        $form = $this->createForm(RealmPlayerType::class, null, [
-//            'realms' => $battleNetSDK->getRealms()
-//        ]);
-//
-//        $form->handleRequest($request);
-//        if ($form->isSubmitted() && $form->isValid()) {
-//            $data = $form->getData();
-//
-//            return $this->redirectToRoute('dashboard_stats', [
-//                    'user' => implode('-', [$data['realm'], $data['character_name']])]
-//            );
-//        }
-//
-//        return $this->render('dashboard/index.html.twig', [
-//            'form' => $form->createView()
-//        ]);
+        $form = $this->createForm(RealmPlayerType::class, null, [
+            'realms' => $wowCollectionSDK->getRealms()
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            return $this->redirectToRoute('dashboard_stats', [
+                    'user' => implode('-', [$data['realm'], $data['character_name']])]
+            );
+        }
+
+        return $this->render('dashboard/index.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
     /**

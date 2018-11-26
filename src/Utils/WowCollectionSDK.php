@@ -40,7 +40,10 @@ class WowCollectionSDK
     }
 
     /* API Endpoints */
-
+    /**
+     * TODO fetch all pages, put to cache the result
+     * @return array
+     */
     public function getRealms()
     {
         $response = $this->client->request('GET', '/realms', [
@@ -51,7 +54,10 @@ class WowCollectionSDK
             return null;
         }
 
-        return json_decode($response->getBody()->getContents(), true);
+        $data = json_decode($response->getBody()->getContents(), true);
+        $realms = $data['hydra:member'];
+
+        return array_combine(array_column($realms, 'slug'), array_column($realms, 'name'));
     }
 
     /* Security */
@@ -237,6 +243,9 @@ class WowCollectionSDK
         return $response->getStatusCode() === 200;
     }
 
+    /**
+     * @return array
+     */
     private function getBasicJsonHeader()
     {
         return [
