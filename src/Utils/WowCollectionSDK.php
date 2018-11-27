@@ -24,19 +24,17 @@ class WowCollectionSDK
     /**
      * ApiSDK constructor.
      * @param TokenStorageInterface $tokenStorage
+     * @param Client $guzzleClient
      * @param string $api_url
      * @param string $api_key
      */
-    public function __construct(TokenStorageInterface $tokenStorage, string $api_url, string $api_key)
+    public function __construct(TokenStorageInterface $tokenStorage, Client $guzzleClient,
+                                string $api_url, string $api_key)
     {
         $this->tokenStorage = $tokenStorage;
         $this->api_url = $api_url;
         $this->api_key = $api_key;
-        $this->client = new Client([
-            'verify' => false,
-            'base_uri' => $api_url,
-            'timeout' => 30,
-        ]);
+        $this->client = $guzzleClient;
     }
 
     /* API Endpoints */
@@ -174,7 +172,7 @@ class WowCollectionSDK
             ]);
         } else {
             $response = $this->client->request('POST', '/token/refresh', [
-                'body' => sprintf('refresh_token="%s"', $user->getJwtRefreshToken()),
+                'form_params' => ['refresh_token' => $user->getJwtRefreshToken()],
             ]);
         }
 

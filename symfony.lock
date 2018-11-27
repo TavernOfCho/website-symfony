@@ -1,7 +1,4 @@
 {
-    "clue/stream-filter": {
-        "version": "v1.4.0"
-    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -35,6 +32,9 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "e-moe/guzzle6-bundle": {
+        "version": "v1.2.3"
+    },
     "easycorp/easy-log-handler": {
         "version": "1.0",
         "recipe": {
@@ -67,45 +67,6 @@
     },
     "nikic/php-parser": {
         "version": "v4.0.4"
-    },
-    "php-http/cache-plugin": {
-        "version": "v1.5.0"
-    },
-    "php-http/client-common": {
-        "version": "1.8.0"
-    },
-    "php-http/discovery": {
-        "version": "1.4.0"
-    },
-    "php-http/guzzle6-adapter": {
-        "version": "v1.1.1"
-    },
-    "php-http/httplug": {
-        "version": "v1.1.0"
-    },
-    "php-http/httplug-bundle": {
-        "version": "1.6",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "1.6",
-            "ref": "4655962c64e2de96c418caf576c57215711c7877"
-        }
-    },
-    "php-http/logger-plugin": {
-        "version": "v1.0.0"
-    },
-    "php-http/message": {
-        "version": "1.7.0"
-    },
-    "php-http/message-factory": {
-        "version": "v1.0.2"
-    },
-    "php-http/promise": {
-        "version": "v1.0.0"
-    },
-    "php-http/stopwatch-plugin": {
-        "version": "1.1.0"
     },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
