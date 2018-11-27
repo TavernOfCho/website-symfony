@@ -4,14 +4,10 @@ namespace App\Utils;
 
 use App\Security\Core\User\BnetOAuthUser;
 use GuzzleHttp\Psr7\Response;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use GuzzleHttp\Client;
 
 class WowCollectionSDK
 {
-    /** @var TokenStorageInterface $tokenStorage */
-    private $tokenStorage;
-
     /** @var string $api_url */
     private $api_url;
 
@@ -23,39 +19,23 @@ class WowCollectionSDK
 
     /**
      * ApiSDK constructor.
-     * @param TokenStorageInterface $tokenStorage
      * @param Client $guzzleClient
      * @param string $api_url
      * @param string $api_key
      */
-    public function __construct(TokenStorageInterface $tokenStorage, Client $guzzleClient,
-                                string $api_url, string $api_key)
+    public function __construct(Client $guzzleClient, string $api_url, string $api_key)
     {
-        $this->tokenStorage = $tokenStorage;
         $this->api_url = $api_url;
         $this->api_key = $api_key;
         $this->client = $guzzleClient;
     }
 
-    /* API Endpoints */
     /**
-     * TODO fetch all pages, put to cache the result
-     * @return array
+     * @return Client
      */
-    public function getRealms()
+    public function getClient(): Client
     {
-        $response = $this->client->request('GET', '/realms', [
-            'headers' => $this->getBasicJsonHeader()
-        ]);
-
-        if (!$this->isStatusValid($response)) {
-            return null;
-        }
-
-        $data = json_decode($response->getBody()->getContents(), true);
-        $realms = $data['hydra:member'];
-
-        return array_combine(array_column($realms, 'slug'), array_column($realms, 'name'));
+        return $this->client;
     }
 
     /* Security */
@@ -115,7 +95,7 @@ class WowCollectionSDK
             return null;
         }
 
-        $response = $this->client->request('POST', '/register', [
+        $response = $this->getClient()->request('POST', '/register', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
@@ -164,14 +144,14 @@ class WowCollectionSDK
     private function sendToken(BnetOAuthUser $user, array $credentials = null)
     {
         if (is_array($credentials)) {
-            $response = $this->client->request('POST', '/login_check', [
+            $response = $this->getClient()->request('POST', '/login_check', [
                 'json' => [
                     'username' => $credentials['_username'],
                     'password' => $credentials['_password'],
                 ]
             ]);
         } else {
-            $response = $this->client->request('POST', '/token/refresh', [
+            $response = $this->getClient()->request('POST', '/token/refresh', [
                 'form_params' => ['refresh_token' => $user->getJwtRefreshToken()],
             ]);
         }
@@ -197,7 +177,7 @@ class WowCollectionSDK
      */
     public function fetchUserSecurity(string $username, string $password)
     {
-        $response = $this->client->request('GET', '/users/security', [
+        $response = $this->getClient()->request('GET', '/users/security', [
             'query' => [
                 'username' => $username,
                 'password' => $password,
@@ -217,39 +197,12 @@ class WowCollectionSDK
     }
 
     /**
-     * @return BnetOAuthUser|null|object|string
-     */
-    private function getUser()
-    {
-        if (null === $token = $this->tokenStorage->getToken()) {
-            return null;
-        }
-
-        if (!is_object($user = $token->getUser())) {
-            return null;
-        }
-
-        return $user;
-    }
-
-    /**
      * @param Response $response
      * @return bool
      */
-    private function isStatusValid(Response $response)
+    public function isStatusValid(Response $response)
     {
         return $response->getStatusCode() === 200;
     }
 
-    /**
-     * @return array
-     */
-    private function getBasicJsonHeader()
-    {
-        return [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/ld+json',
-            'Authorization' => 'Bearer ' . $this->getUser()->getJwtToken()
-        ];
-    }
 }

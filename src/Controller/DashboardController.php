@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Form\RealmPlayerType;
 use App\Utils\WowCollectionSDK;
+use App\Utils\WowCollectionSDKExtension;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,13 +18,13 @@ class DashboardController extends AbstractController
     /**
      * @Route("/", name="dashboard_index")
      * @param Request $request
-     * @param WowCollectionSDK $wowCollectionSDK
+     * @param WowCollectionSDKExtension $wowCollectionSDKExtension
      * @return Response
      */
-    public function index(Request $request, WowCollectionSDK $wowCollectionSDK)
+    public function index(Request $request, WowCollectionSDKExtension $wowCollectionSDKExtension)
     {
         $form = $this->createForm(RealmPlayerType::class, null, [
-            'realms' => $wowCollectionSDK->getRealms()
+            'realms' => $wowCollectionSDKExtension->getRealms()
         ]);
 
         $form->handleRequest($request);
