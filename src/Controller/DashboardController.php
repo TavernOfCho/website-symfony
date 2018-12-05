@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Form\RealmPlayerType;
-use App\Utils\WowCollectionSDK;
 use App\Utils\WowCollectionSDKExtension;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,14 +17,11 @@ class DashboardController extends AbstractController
     /**
      * @Route("/", name="dashboard_index")
      * @param Request $request
-     * @param WowCollectionSDKExtension $wowCollectionSDKExtension
      * @return Response
      */
-    public function index(Request $request, WowCollectionSDKExtension $wowCollectionSDKExtension)
+    public function index(Request $request)
     {
-        $form = $this->createForm(RealmPlayerType::class, null, [
-            'realms' => $wowCollectionSDKExtension->getRealms()
-        ]);
+        $form = $this->createForm(RealmPlayerType::class);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -44,20 +40,27 @@ class DashboardController extends AbstractController
     /**
      * @Route("/stats", name="dashboard_stats")
      * @param Request $request
-     * @param WowCollectionSDK $wowCollectionSDK
+     * @param WowCollectionSDKExtension $wowCollectionSDKExtension
      * @return Response
      */
-    public function stats(Request $request, WowCollectionSDK $wowCollectionSDK)
+    public function stats(Request $request, WowCollectionSDKExtension $wowCollectionSDKExtension)
     {
-//        if (!$request->query->has('user')) {
-//            return $this->redirectToRoute('dashboard_index');
-//        }
-//
-//        list($realm, $player) = explode('-', $request->query->get('user'));
-//
-//        return $this->render('dashboard/stats.html.twig', [
-//            'realm' => $battleNetSDK->getRealm($realm),
-//            'player' => $player
-//        ]);
+        if (!$request->query->has('user')) {
+            return $this->redirectToRoute('dashboard_index');
+        }
+
+        list($realm, $player) = explode('-', $request->query->get('user'));
+
+        if (null === $profile = $wowCollectionSDKExtension->findCharacter($player, $realm)) {
+            $this->addFlash('error', sprintf('The player %s for realm %s does not exists', $player, $realm));
+
+            return $this->redirectToRoute('dashboard_index');
+        }
+
+        return $this->render('dashboard/stats.html.twig', [
+            'realm' => $wowCollectionSDKExtension->getRealm($realm),
+            'player' => $player,
+            'profile' => $profile
+        ]);
     }
 }

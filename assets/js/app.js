@@ -13,7 +13,6 @@ require('bootstrap-datepicker');
 require('../js/now-ui-kit/now-ui-kit');
 
 import '../css/app.scss';
-import '../img/blurred-image-1.jpg'
 
 $(document).ready(function () {
     $.fn.select2.defaults.set("theme", "bootstrap");
