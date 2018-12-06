@@ -54,18 +54,21 @@ class WowCollectionSDKExtension
      */
     public function getCharacter(string $player, string $realm)
     {
-        $response = $this->getClient()->request('GET', sprintf('/characters/%s', $player), [
-            'query' => [
-                'realm' => $realm
-            ],
-            'headers' => $this->getBasicJsonHeader()
-        ]);
+        return $this->getWowCollectionSDK()->cacheHandle(function () use ($player, $realm) {
+            $response = $this->getClient()->request('GET', sprintf('/characters/%s', $player), [
+                'query' => [
+                    'realm' => $realm
+                ],
+                'headers' => $this->getBasicJsonHeader()
+            ]);
 
-        if (!$this->wowCollectionSDK->isStatusValid($response)) {
-            return null;
-        }
+            if (!$this->wowCollectionSDK->isStatusValid($response)) {
+                return null;
+            }
 
-        return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true);
+
+        }, sprintf('player_%s_%s', $player, $realm));
     }
 
     /**
@@ -74,15 +77,17 @@ class WowCollectionSDKExtension
      */
     public function getRealm(string $realm)
     {
-        $response = $this->getClient()->request('GET', sprintf('/realms/%s', $realm), [
-            'headers' => $this->getBasicJsonHeader()
-        ]);
+        return $this->getWowCollectionSDK()->cacheHandle(function () use ($realm) {
+            $response = $this->getClient()->request('GET', sprintf('/realms/%s', $realm), [
+                'headers' => $this->getBasicJsonHeader()
+            ]);
 
-        if (!$this->wowCollectionSDK->isStatusValid($response)) {
-            return null;
-        }
+            if (!$this->wowCollectionSDK->isStatusValid($response)) {
+                return null;
+            }
 
-        return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true);
+        }, sprintf('realm_%s', $realm), WowCollectionSDK::LONG_TIME);
     }
 
     /**
@@ -90,17 +95,19 @@ class WowCollectionSDKExtension
      */
     public function getCharacterClasses()
     {
-        $response = $this->getClient()->request('GET', '/classes', [
-            'headers' => $this->getBasicJsonHeader()
-        ]);
+        return $this->getWowCollectionSDK()->cacheHandle(function () {
+            $response = $this->getClient()->request('GET', '/classes', [
+                'headers' => $this->getBasicJsonHeader()
+            ]);
 
-        if (!$this->wowCollectionSDK->isStatusValid($response)) {
-            return null;
-        }
+            if (!$this->wowCollectionSDK->isStatusValid($response)) {
+                return null;
+            }
 
-        $data = json_decode($response->getBody()->getContents(), true);
+            $data = json_decode($response->getBody()->getContents(), true);
 
-        return $this->paginateOrData($data);
+            return $this->paginateOrData($data);
+        }, 'classes', WowCollectionSDK::LONG_TIME);
     }
 
     /**
@@ -108,17 +115,19 @@ class WowCollectionSDKExtension
      */
     public function getCharacterRaces()
     {
-        $response = $this->getClient()->request('GET', '/races', [
-            'headers' => $this->getBasicJsonHeader()
-        ]);
+        return $this->getWowCollectionSDK()->cacheHandle(function () {
+            $response = $this->getClient()->request('GET', '/races', [
+                'headers' => $this->getBasicJsonHeader()
+            ]);
 
-        if (!$this->wowCollectionSDK->isStatusValid($response)) {
-            return null;
-        }
+            if (!$this->wowCollectionSDK->isStatusValid($response)) {
+                return null;
+            }
 
-        $data = json_decode($response->getBody()->getContents(), true);
+            $data = json_decode($response->getBody()->getContents(), true);
 
-        return $this->paginateOrData($data);
+            return $this->paginateOrData($data);
+        }, 'races', WowCollectionSDK::LONG_TIME);
     }
 
     /**
@@ -237,5 +246,4 @@ class WowCollectionSDKExtension
             'Authorization' => 'Bearer ' . $this->getUser()->getJwtToken()
         ];
     }
-
 }
