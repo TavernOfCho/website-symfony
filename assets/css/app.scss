@@ -4,38 +4,124 @@
 @import '~select2-bootstrap-theme/dist/select2-bootstrap.min.css';
 @import "now-ui-kit";
 
-html, body {
-    height: 100%;
-}
-
-div.wrapper {
-    height: inherit;
-
-    .section.section-signup {
-        background-size: cover;
-        background: url('../img/bg11.jpg') bottom center;
-        height: inherit;
-    }
-}
-
 body > .container {
-    padding-top: 60px;
+  padding-top: 60px;
 }
 
 .select2-container--bootstrap {
-    .select2-selection--single {
-        .select2-selection__rendered {
-            padding: 4px 18px 10px 8px;
-        }
+  .select2-selection--single {
+    .select2-selection__rendered {
+      padding: 4px 18px 10px 8px;
     }
+  }
 
-    .select2-selection {
-        height: 38px;
+  .select2-selection {
+    height: 38px;
 
-    }
+  }
 }
 
 .bg-battle-pet-horde {
-    background-image: url('../img/battle-pet-horde.jpg');
+  background-image: url('../img/battle-pet-horde.jpg');
 }
 
+.character-profile-results {
+  .portrait.mage {
+    border-color: #68CCEF;
+  }
+
+  .player-information {
+    margin-left: 90px;
+  }
+
+  .portrait.chevalier-de-la-mort {
+    border-color: #C41E3B;
+  }
+
+  .portrait.chaman {
+    border-color: #2359FF;
+  }
+
+  .portrait.chasseur {
+    border-color: #AAD372;
+  }
+
+  .portrait.demoniste {
+    border-color: #9382C9;
+  }
+
+  .portrait.druide {
+    border-color: #FF7C0A;
+  }
+
+  .portrait.guerrier {
+    border-color: #C69B6D;
+  }
+
+  .portrait.mage {
+    border-color: #68CCEF;
+  }
+
+  .portrait.moine {
+    border-color: #008467;
+  }
+
+  .portrait.paladin {
+    border-color: #F48CBA;
+  }
+
+  .portrait.pretre {
+    border-color: #FFF;
+  }
+
+  .portrait.voleur {
+    border-color: #FFF468;
+  }
+
+  .portrait {
+    float: left;
+    margin: 2px 10px 0 0;
+    width: 70px;
+    border-radius: 5px;
+    border: 2px solid #52504a;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.44);
+  }
+
+  .player-information {
+    margin-left: 90px;
+  }
+
+  .description {
+    margin: 5px 0 10px 0;
+    color: #9a8879;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: normal;
+    margin-bottom: 0px;
+    color: #d87e45;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #6b4731;
+    margin-top: 15px;
+  }
+
+  .class_icon {
+    margin: -1px 7px 0 0;
+    width: 22px;
+  }
+
+}
+
+@media screen and (max-width: 768px) {
+  .character-profile-results {
+    .portrait {
+      display: none;
+    }
+
+    .player-information {
+      margin-left: 0;
+    }
+
+  }
+}

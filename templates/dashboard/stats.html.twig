@@ -1,10 +1,24 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}{{ player }} informations{% endblock %}
+
+{% block navbar_class %}
+{% endblock %}
+
 {% block subbody %}
+    {{ dump(profile) }}
+
+    <div class="character-profile-results">
+        <img src="{{ profile.thumbnail }}" alt="{{ profile.name }}"
+             class="portrait {{ profile.class.name|slugify }}">
+        <div class="player-information">
+            <h2>
+                <img class="class_icon" src="{{ asset('build/images/classes/%s.png'|format(profile.class.id)) }}">
+                {{ profile.name }} ({{ profile.race.name }} {{ profile.class.name }} {{ profile.level }}) - {{ profile.realm }}
+            </h2>
+
+
+        </div>
+    </div>
 
 {% endblock %}
-
-{% block title %}
-
-{% endblock %}
-
