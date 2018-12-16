@@ -17,10 +17,10 @@ class LoginForm extends AbstractType
     {
         $builder
             ->add('_username', TextType::class, ['label' => "label.username", 'attr' => [
-                'placeholder' => 'label.username'
+                'placeholder' => 'Username'
             ]])
             ->add('_password', PasswordType::class, ['label' => "label.password", 'attr' => [
-                'placeholder' => 'label.password'
+                'placeholder' => 'Password'
             ]]);
     }
 

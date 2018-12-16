@@ -202,7 +202,14 @@ class WowCollectionSDK
             return null;
         }
 
-        return json_decode($response->getBody()->getContents(), true);
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        $error = $data['hydra:member'][0]['error'] ?? null;
+        if (null !== $error && class_exists($error['type'])) {
+            throw new $error['type']($error['message']);
+        }
+
+        return $data;
     }
 
     /**
