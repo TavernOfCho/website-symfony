@@ -2,23 +2,99 @@
 
 {% block title %}{{ player }} informations{% endblock %}
 
+
 {% block navbar_class %}
 {% endblock %}
 
-{% block subbody %}
-    {{ dump(profile) }}
+{% block javascripts %}
+    <script src="https://wow.zamimg.com/widgets/power.js"></script>
+{% endblock %}
 
-    <div class="character-profile-results">
-        <img src="{{ profile.thumbnail }}" alt="{{ profile.name }}"
-             class="portrait {{ profile.class.name|slugify }}">
-        <div class="player-information">
-            <h2>
-                <img class="class_icon" src="{{ asset('build/images/classes/%s.png'|format(profile.class.id)) }}">
-                {{ profile.name }} ({{ profile.race.name }} {{ profile.class.name }} {{ profile.level }}) - {{ profile.realm }}
-            </h2>
+{% block subbody %}
+
+<div class="character-profile-results">
+    <img src="{{ profile.thumbnail }}" alt="{{ profile.name }}"
+         class="portrait {{ profile.class.name|slugify }}">
+    <div class="player-information">
+        <h2>
+            <img class="class_icon" src="{{ asset('build/images/classes/%s.png'|format(profile.class.id)) }}">
+            {{ profile.name }} ({{ profile.race.name }} {{ profile.class.name }} {{ profile.level }}) - {{ profile.realm }}
+        </h2>
+        {% set gear_order = {
+            'left' : ['head','neck','shoulder','back','chest','wrist'],
+            'right' : ['hands','waist','legs','feet','finger1','finger2','trinket1','trinket2'],
+            'bottom' : ['mainHand','offHand']
+        } %}
+
+
+        <div class="stuff">
+
+            <div class="background">
+                <img id="character-render" src="{{ profile.main_background }}" alt="">
+            </div>
+            {% for key, item_key in gear_order %}
+            <div class="gears {{ key }}">
+                {% for item in item_key %}
+                {% if items[item].icon == 'inv_heartofazeroth' %}
+                <div class="gear quality-azerite">
+                    {% else %}
+                    <div class="gear quality-{{ items[item].quality }}">
+                        {% endif %}
+                        <div class="item">
+                            <a href="#" data-wowhead="item={{ items[item].id }}&domain=fr">
+                                <img  src="{{ items[item].image.large }}" alt="">
+                            </a>
+                        </div>
+                        <div class="description">
+                            <p class="name">{{ items[item].name }}</p>
+                            <p class="level">{{ items[item].itemLevel }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+
+
+            {% set statProperties = {
+                "health" : "vie",
+                "str" : "force",
+                "agi" : "agilité",
+                "int" : "intelligence",
+                "sta" : "endurance",
+                "crit" : "critique",
+                "haste" : "hâte",
+                "mastery" : "maitrise",
+                "leech" : "vol de vie",
+                "versatility" : "polyvalence",
+                "armor" : "armure",
+                "dodge" : "esquive",
+                "parry" : "parer",
+                "mainHandSpeed" : "Vitesse Arme principale",
+                "mainHandDps" : "Dégâts arme principale",
+                "offHandSpeed" : "Vitesse Arme secondaire",
+                "offHandDps" : "Dégâts arme principale"
+            } %}
+
+            <div class="characters-stats" style="background:rgb({{ profile.main_color.r }},{{ profile.main_color.g }},{{ profile.main_color.b }})">
+                {% for key, value in profile.stats %}
+                    {% if key == "powerType" %}
+                        <div class="stat">
+                            <p><span>{{ profile.stats.powerType|capitalize }}</span> : {{ profile.stats.power }} </p>
+                        </div>
+                    {% else %}
+                        {% if statProperties[key] is defined %}
+                            <div class="stat">
+                                <p><span>{{ statProperties[key]|capitalize }}</span> : {{ value|round }} </p>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+
 
 
         </div>
     </div>
 
-{% endblock %}
+    {% endblock %}
