@@ -7,6 +7,7 @@
 {% block body %}
     <div class="section section-signup">
         <div class="container">
+            {{ block('flashbag') }}
             <div class="row">
                 <div class="card card-signup" data-background-color="orange">
                     {{ form_start(form) }}
@@ -38,7 +39,7 @@
                 </div>
             </div>
             <div class="col text-center">
-                <a href="{{ path('security_login') }}" class="btn btn-simple btn-round btn-white btn-lg" target="_blank">
+                <a href="{{ path('security_login') }}" class="btn btn-simple btn-round btn-white btn-lg">
                     View Login Page
                 </a>
             </div>

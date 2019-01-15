@@ -62,7 +62,7 @@ class SecurityController extends AbstractController
             if (null === $user = $apiSDK->createAccount($form->getData())) {
                 $this->addFlash('danger', 'An error occured while creating your account.');
 
-                return $this->redirectToRoute('security_login');
+                return $this->redirectToRoute('user_register');
             }
 
             $this->addFlash('success', sprintf('Bienvenue %s', $user->getUsername()));

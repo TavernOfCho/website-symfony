@@ -6,6 +6,16 @@
     {% block stylesheets %}{% endblock %}
     {{ encore_entry_link_tags('app') }}
 
+    <!--
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-9534390253957005",
+            enable_page_level_ads: true
+        });
+    </script>
+    -->
+
 </head>
 <body class="sidebar-collapse">
 <header>
@@ -27,18 +37,35 @@
                     <li class="nav-item {{ currentPath == "index" ? "active" : "" }}">
                         <a class="nav-link" href="{{ path('index') }}">Home</a>
                     </li>
+                    {% if app.user %}
+                        <li class="nav-item {{ currentPath == "dashboard_stats" ? "active" : "" }}">
+                            <a class="nav-link" href="{{ path('dashboard_stats') }}">Stats</a>
+                        </li>
+                        {#<li class="nav-item {{ currentPath == "objectives" ? "active" : "" }}">#}
+                        {#<a class="nav-link" href="{{ path('objectives_index') }}">Objectives</a>#}
+                        {#</li>#}
+                    {% endif %}
                 </ul>
                 <ul class="navbar-nav px-3">
                     {% if app.user %}
                         <li class="nav-item text-nowrap">
-                            <a class="nav-link" href="{{ path('logout') }}">Sign out</a>
+                            {% if app.session.has('character') %}
+                                <a class="nav-link" href="{{ path('dashboard_index') }}">
+                                    {{ app.session.get('character')['name'] ?? '' }} -
+                                    {{ app.session.get('character')['realm'] ?? '' }}, not you?
+                                </a>
+                            {% else %}
+                                <a class="nav-link" href="{{ path('dashboard_index') }}">
+                                    No character selected
+                                </a>
+                            {% endif %}
                         </li>
                     {% else %}
                         <li class="nav-item text-nowrap">
-                            <a class="nav-link" href="{{ path('user_register') }}">Sign up</a>
+                            <a class="nav-link" href="{{ path('user_register') }}">Register</a>
                         </li>
                         <li class="nav-item text-nowrap">
-                            <a class="nav-link" href="{{ path('security_login') }}">Sign in</a>
+                            <a class="nav-link" href="{{ path('security_login') }}">Login</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -51,6 +78,16 @@
     {% block body %}
         <div class="section">
             <div class="container">
+                {% block flashbag %}
+                    {% for type, messages in app.session.flashbag.all() %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ type }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                {% endblock %}
+
                 {% block subbody %}{% endblock %}
             </div>
         </div>

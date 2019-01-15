@@ -3,13 +3,10 @@
 @import '~select2/dist/css/select2.css';
 @import '~select2-bootstrap-theme/dist/select2-bootstrap.min.css';
 @import "now-ui-kit";
+@import "stats";
 
 body > .container {
   padding-top: 60px;
-}
-
-.wrapper {
-  background-color: #ecf0f5;
 }
 
 .select2-container--bootstrap {
@@ -128,4 +125,15 @@ body > .container {
     }
 
   }
+}
+
+
+.form-check-input {
+  margin-left: 0;
+}
+
+.form-check input[type="checkbox"] {
+  opacity: 1;
+  position: relative;
+  visibility: visible;
 }

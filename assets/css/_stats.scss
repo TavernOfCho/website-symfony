@@ -1,0 +1,190 @@
+.player-information{
+
+  .stuff{
+    position: relative;
+    .gears{
+      display: inline-block;
+      margin: 10px 0;
+
+      &.left, &.right, &.bottom{
+        position: absolute;
+      }
+      &.left, &.right{
+        top: 50%;
+        transform: translateY(-50%);
+        max-width: 500px;
+        .gear{
+          width: 100%;
+        }
+      }
+      &.bottom{
+        bottom: 0;
+        left: 50%;
+        transform:translateX(-50%);
+        .gear{
+          position: relative;
+          width: 56px;
+          &:first-of-type{
+            margin-right: 5px;
+            .description{
+              text-align: right;
+              margin-right: 5px;
+              position: absolute;
+              top: 0;
+              right: 100%;
+              width: 300px;
+            }
+          }
+          &:last-of-type{
+            margin-left: 5px;
+            .description{
+              text-align: left;
+              margin-left: 5px;
+              position: absolute;
+              left: 100% ;
+              top: 0;
+              width: 300px;
+            }
+          }
+        }
+      }
+      &.left{
+        left: 20px;
+        .gear{
+          .item,.description{
+            float:left;
+          }
+          .description{
+            text-align: left;
+            margin-left: 10px;
+          }
+        }
+      }
+      &.right{
+        right: 20px;
+        .gear{
+          .item,.description{
+            float:right;
+          }
+          .description{
+            text-align: right;
+            margin-right: 10px;
+          }
+        }
+
+      }
+
+      &.bottom{
+        .gear{
+          .item,.description{
+            display: inline-block;
+          }
+        }
+      }
+
+      .gear{
+        display: inline-block;
+        .item{
+          width: 55px;
+          display: inline-block;
+          vertical-align: top;
+          border:solid 1px transparent;
+          img{
+            width: 55px;
+            height: auto;
+            display: inline-block;
+          }
+        }
+        .description{
+          display: inline-block;
+          margin: 0;
+          .name{
+            font-size: 0.7rem;
+            color:#fff;
+            margin: 0;
+          }
+          .level{
+            text-transform: uppercase;
+            margin: 0;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #fff
+          }
+        }
+
+        &.quality-2{
+          .item{
+            border-color: #1eff00;
+          }
+          .description{
+            .name{
+              color:#1eff00;
+            }
+          }
+        }
+        &.quality-3{
+          .item{
+            border-color: #0081ff;
+          }
+          .description{
+            .name{
+              color:#0081ff;
+            }
+          }
+        }
+        &.quality-4{
+          .item{
+            border-color: #c600ff;
+          }
+          .description{
+            .name{
+              color:#c600ff;
+            }
+          }
+        }
+        &.quality-azerite{
+          .item{
+            border-color: #e5cc80;
+          }
+          .description{
+            .name{
+              color:#e5cc80;
+            }
+          }
+        }
+      }
+    }
+
+    @media screen and (max-width: 992px){
+      .gear{
+        .item{
+          width: 23px !important;
+          img{
+            width: 23px !important;
+          }
+        }
+      }
+    }
+  }
+
+  .characters-stats{
+    padding:20px 20px;
+    //background: #080516;
+    display: flex;
+    flex-direction: row;
+    flex-flow: wrap;
+    color: #fff;
+    font-size: 0.8rem;
+    .stat{
+      p{
+        display: block;
+        font-weight: 300;
+        width: 300px;
+        text-align: center;
+        span{
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}

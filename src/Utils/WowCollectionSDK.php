@@ -97,7 +97,7 @@ class WowCollectionSDK
             return null;
         }
 
-        $response = $this->fetchUserSecurity($credentials['username'], $credentials['plainPassword']);
+        $response = $this->fetchUserSecurity($credentials['username'], $credentials['plainPassword'], false);
 
         //Existing user
         if (null !== $response && isset($response['hydra:member']) && count($response['hydra:member']) > 0) {
@@ -182,9 +182,11 @@ class WowCollectionSDK
     /**
      * @param string $username
      * @param string $password
+     * @param bool $throwError
      * @return mixed|null
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchUserSecurity(string $username, string $password)
+    public function fetchUserSecurity(string $username, string $password, bool $throwError = true)
     {
         $response = $this->getClient()->request('GET', '/users/security', [
             'query' => [
@@ -204,9 +206,12 @@ class WowCollectionSDK
 
         $data = json_decode($response->getBody()->getContents(), true);
 
-        $error = $data['hydra:member'][0]['error'] ?? null;
-        if (null !== $error && class_exists($error['type'])) {
-            throw new $error['type']($error['message']);
+        if (null !== $error = $data['hydra:member'][0]['error'] ?? null) {
+            if ($throwError && class_exists($error['type'])) {
+                throw new $error['type']($error['message']);
+            }
+
+            unset($data['hydra:member'][0]);
         }
 
         return $data;

@@ -68,7 +68,11 @@ class TokenAuthenticator extends AbstractGuardAuthenticator implements Authentic
      */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        return $this->provider->getApiSDK()->generateBnetOauthUser($credentials);
+        if (null === $user = $this->provider->getApiSDK()->generateBnetOauthUser($credentials)) {
+            throw new AuthenticationException('An authentication exception occurred.');
+        }
+
+        return $user;
     }
 
     /**
@@ -113,6 +117,10 @@ class TokenAuthenticator extends AbstractGuardAuthenticator implements Authentic
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
+        if (null !== $authException) {
+            $request->getSession()->set(Security::AUTHENTICATION_ERROR, $authException);
+        }
+
         return new RedirectResponse($this->router->generate('security_login'));
     }
 
