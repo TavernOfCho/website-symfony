@@ -6,6 +6,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class BnetOAuthUser implements UserInterface
 {
+    /** @var int $id */
+    private $id;
+
     /** @var string $bnet_id */
     private $bnet_id;
 
@@ -47,6 +50,25 @@ class BnetOAuthUser implements UserInterface
 
     /** @var bool $mail_enabled */
     private $mail_enabled = true;
+
+    /**
+     * @return int
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     * @return BnetOAuthUser
+     */
+    public function setId(?int $id): BnetOAuthUser
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * @return string

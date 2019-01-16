@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Form\UserRegistrationForm;
 use App\Manager\UserManager;
+use App\Security\Core\User\BnetOAuthUser;
 use App\Security\TokenAuthenticator;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -59,8 +60,9 @@ class SecurityController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if (null === $user = $userManager->createAccount($form->getData())) {
-                $this->addFlash('danger', 'An error occured while creating your account.');
+            $user = $userManager->createAccount($form->getData());
+            if (!$user instanceof BnetOAuthUser) {
+                $this->addFlash('danger', $user);
 
                 return $this->redirectToRoute('user_register');
             }

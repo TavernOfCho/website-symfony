@@ -60,6 +60,12 @@
                                 </a>
                             {% endif %}
                         </li>
+                        <li class="nav-item text-nowrap">
+                            <a class="nav-link" href="{{ path('dashboard_profile') }}">Profile</a>
+                        </li>
+                        <li class="nav-item text-nowrap">
+                            <a class="nav-link" href="{{ path('logout') }}">Sign out</a>
+                        </li>
                     {% else %}
                         <li class="nav-item text-nowrap">
                             <a class="nav-link" href="{{ path('user_register') }}">Register</a>

@@ -3,22 +3,9 @@
 namespace App\Manager;
 
 use App\Security\Core\User\BnetOAuthUser;
-use App\Utils\WowCollectionSDK;
 
-class UserManager
+class UserManager extends BaseManager
 {
-    /** @var WowCollectionSDK $wowCollectionSDK */
-    private $wowCollectionSDK;
-
-    /**
-     * UserManager constructor.
-     * @param WowCollectionSDK $wowCollectionSDK
-     */
-    public function __construct(WowCollectionSDK $wowCollectionSDK)
-    {
-        $this->wowCollectionSDK = $wowCollectionSDK;
-    }
-
     /**
      * @param array $credentials
      * @return BnetOAuthUser|null
@@ -38,7 +25,9 @@ class UserManager
             $user = new BnetOAuthUser();
             $data = $data[0];
 
-            $user->setUsername($data['username'])
+            $user
+                ->setId($data['id'])
+                ->setUsername($data['username'])
                 ->setBnetAccessToken($data['bnetAccessToken'])
                 ->setBnetBattletag($data['bnetBattletag'])
                 ->setBnetId($data['bnetId'])
@@ -47,8 +36,18 @@ class UserManager
                 ->setRoles($data['roles'])
                 ->setEnabled($data['enabled']);
 
-            if (false === $this->jwtConnect($user, $credentials)) {
+            if (null === $user = $this->jwtConnect($user, $credentials)) {
                 return null;
+            }
+
+            if (isset($credentials['_email'])) {
+                $user->setEmail($credentials['_email']);
+
+                // Add the email to the account
+                $this->patchEmailPreferences($data['id'], [
+                    'email' => $user->getEmail(),
+                    'mail_enabled' => true
+                ], $user);
             }
 
             return $user;
@@ -59,7 +58,7 @@ class UserManager
 
     /**
      * @param array $credentials
-     * @return BnetOAuthUser|null
+     * @return BnetOAuthUser|string|null
      */
     public function createAccount(array $credentials)
     {
@@ -71,10 +70,10 @@ class UserManager
 
         //Existing user
         if (null !== $response && isset($response['hydra:member']) && count($response['hydra:member']) > 0) {
-            return null;
+            return 'An account with this username already exists';
         }
 
-        $response = $this->wowCollectionSDK->getClient()->request('POST', '/register', [
+        $response = $this->getSDK()->getClient()->request('POST', '/register', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
@@ -85,33 +84,65 @@ class UserManager
         ]);
 
 
-        if (!$this->wowCollectionSDK->isStatusValid($response)) {
-            return null;
+        if (!$this->getSDK()->isStatusValid($response)) {
+            return 'An error occured while creating your account.';
         }
 
         return $this->generateBnetOauthUser([
             '_username' => $credentials['username'],
             '_password' => $credentials['plainPassword'],
+            '_email' => $credentials['email']
         ]);
+    }
+
+    /**
+     * @param int $id
+     * @param array $data
+     * @param BnetOAuthUser|null $user
+     * @return mixed|null
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function patchEmailPreferences(int $id, array $data, BnetOAuthUser $user = null)
+    {
+        $headers = $user ? [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/ld+json',
+            'Authorization' => 'Bearer ' . $user->getJwtToken()
+        ] : $this->getBasicJsonHeader();
+
+        $response = $this->getSDK()->getClient()->request('PUT', sprintf('/users/%s', $id), [
+            'headers' => $headers,
+            'json' => [
+                'email' => $data['email'],
+                'mail_enabled' => $data['mail_enabled'],
+            ]
+        ]);
+
+        if (!$this->getSDK()->isStatusValid($response)) {
+            return null;
+        }
+
+        return $response;
+    }
+
+
+    /**
+     * @param BnetOAuthUser $user
+     * @return BnetOAuthUser
+     */
+    public function jwtRefreshToken(BnetOAuthUser $user)
+    {
+        return $this->sendToken($user);
     }
 
     /**
      * @param BnetOAuthUser $user
      * @param array $credentials
-     * @return bool
+     * @return BnetOAuthUser|bool
      */
     private function jwtConnect(BnetOAuthUser $user, array $credentials)
     {
         return $this->sendToken($user, $credentials);
-    }
-
-    /**
-     * @param BnetOAuthUser $user
-     * @return bool
-     */
-    public function jwtRefreshToken(BnetOAuthUser $user)
-    {
-        return $this->sendToken($user);
     }
 
     /**
@@ -122,11 +153,11 @@ class UserManager
      */
     private function fetchUserSecurity(string $username, string $password, bool $throwError = true)
     {
-        $response = $this->wowCollectionSDK->getClient()->request('GET', '/users/security', [
+        $response = $this->getSDK()->getClient()->request('GET', '/users/security', [
             'query' => [
                 'username' => $username,
                 'password' => $password,
-                'api_key' => $this->wowCollectionSDK->getApiKey(),
+                'api_key' => $this->getSDK()->getApiKey(),
             ],
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -134,7 +165,7 @@ class UserManager
             ]
         ]);
 
-        if (!$this->wowCollectionSDK->isStatusValid($response)) {
+        if (!$this->getSDK()->isStatusValid($response)) {
             return null;
         }
 
@@ -154,25 +185,25 @@ class UserManager
     /**
      * @param BnetOAuthUser $user
      * @param array|null $credentials
-     * @return bool
+     * @return BnetOAuthUser
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     private function sendToken(BnetOAuthUser $user, array $credentials = null)
     {
         if (is_array($credentials)) {
-            $response = $this->wowCollectionSDK->getClient()->request('POST', '/login_check', [
+            $response = $this->getSDK()->getClient()->request('POST', '/login_check', [
                 'json' => [
                     'username' => $credentials['_username'],
                     'password' => $credentials['_password'],
                 ]
             ]);
         } else {
-            $response = $this->wowCollectionSDK->getClient()->request('POST', '/token/refresh', [
+            $response = $this->getSDK()->getClient()->request('POST', '/token/refresh', [
                 'form_params' => ['refresh_token' => $user->getJwtRefreshToken()],
             ]);
         }
 
-        if (!$this->wowCollectionSDK->isStatusValid($response)) {
+        if (!$this->getSDK()->isStatusValid($response)) {
             return false;
         }
 
@@ -183,7 +214,7 @@ class UserManager
             ->setJwtRefreshToken($response['refresh_token'])
             ->resetTokenExpiration();
 
-        return true;
+        return $user;
     }
 
 }
