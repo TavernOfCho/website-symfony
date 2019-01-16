@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Objectives{% endblock %}
+
+{% block body %}
+    {{ include('parts/page_header.html.twig', {
+        'img_class': 'bg-battle-pet-horde',
+        'title': 'Objectives'
+    }) }}
+
+    {{ parent() }}
+{% endblock %}
+
+{% block subbody %}
+    <h1 class="h3 mb-3 font-weight-normal">Objectives</h1>
+    <a href="{{ path('objectives_create') }}" class="btn btn-primary">Create an objective</a>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Character</th>
+            <th>Title</th>
+            <th>Achievement</th>
+            <th>Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for objective in objectives %}
+            <tr>
+                <td>{{ objective.username }}</td>
+                <td>{{ objective.title }}</td>
+                <td>{{ achievement_label(objective.AchievementId) }}</td>
+                <td>{{ objective.endingDate|date("m/d/Y") }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

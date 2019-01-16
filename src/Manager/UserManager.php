@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Security\Core\User\BnetOAuthUser;
+use App\Utils\WowCollectionSDK;
 
 class UserManager extends BaseManager
 {
@@ -123,6 +124,28 @@ class UserManager extends BaseManager
         }
 
         return $response;
+    }
+
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function find(int $id)
+    {
+        return $this->getSDK()->cacheHandle(function () use ($id) {
+            $response = $this->getClient()->request('GET', sprintf('/users/%s', $id), [
+                'headers' => $this->getBasicJsonHeader()
+            ]);
+
+            if (!$this->getSDK()->isStatusValid($response)) {
+                return null;
+            }
+
+            $data = json_decode($response->getBody()->getContents(), true);
+
+            return $data;
+        }, sprintf('users_%s', $id), WowCollectionSDK::SHORT_TIME);
+
     }
 
 

@@ -370,4 +370,12 @@ class BnetOAuthUser implements UserInterface
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getIri()
+    {
+        return sprintf('/users/%s', $this->id);
+    }
 }
