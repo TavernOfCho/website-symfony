@@ -5,7 +5,6 @@ namespace App\Security\Core\User;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
-use App\Utils\WowCollectionSDK;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
@@ -14,28 +13,6 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  */
 class UserProvider implements UserProviderInterface
 {
-    /**
-     * @var WowCollectionSDK $apiSDK
-     */
-    private $apiSDK;
-
-
-    /**
-     * OauthUserProvider constructor.
-     * @param WowCollectionSDK $apiSDK
-     */
-    public function __construct(WowCollectionSDK $apiSDK)
-    {
-        $this->apiSDK = $apiSDK;
-    }
-
-    /**
-     * @return WowCollectionSDK
-     */
-    public function getApiSDK(): WowCollectionSDK
-    {
-        return $this->apiSDK;
-    }
     /**
      * @param UserInterface $user
      * @return BnetOAuthUser|UserInterface

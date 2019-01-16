@@ -42,6 +42,12 @@ class BnetOAuthUser implements UserInterface
     /** @var \DateTime $jwt_refresh_token_expiration */
     private $jwt_refresh_token_expiration;
 
+    /** @var string $email */
+    private $email;
+
+    /** @var bool $mail_enabled */
+    private $mail_enabled = true;
+
     /**
      * @return string
      */
@@ -301,6 +307,44 @@ class BnetOAuthUser implements UserInterface
     {
         $this->setJwtTokenExpiration((new \DateTime())->add(new \DateInterval("PT3600S")));
         $this->setJwtRefreshTokenExpiration((new \DateTime())->add(new \DateInterval("P1M")));
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string|null $email
+     * @return BnetOAuthUser
+     */
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isMailEnabled(): ?bool
+    {
+        return $this->mail_enabled;
+    }
+
+    /**
+     * @param bool|null $mail_enabled
+     * @return BnetOAuthUser
+     */
+    public function setMailEnabled(?bool $mail_enabled): self
+    {
+        $this->mail_enabled = $mail_enabled;
 
         return $this;
     }

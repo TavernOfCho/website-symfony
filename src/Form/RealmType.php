@@ -4,25 +4,23 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Utils\WowCollectionSDKExtension;
+use App\Manager\RealmManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RealmType extends AbstractType
 {
-    /**
-     * @var WowCollectionSDKExtension
-     */
-    private $wowCollectionSDKExtension;
+    /** @var RealmManager $realmManager */
+    private $realmManager;
 
     /**
      * RealmType constructor.
-     * @param WowCollectionSDKExtension $wowCollectionSDKExtension
+     * @param RealmManager $realmManager
      */
-    public function __construct(WowCollectionSDKExtension $wowCollectionSDKExtension)
+    public function __construct(RealmManager $realmManager)
     {
-        $this->wowCollectionSDKExtension = $wowCollectionSDKExtension;
+        $this->realmManager = $realmManager;
     }
 
     /**
@@ -32,7 +30,7 @@ class RealmType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'choices' => $this->wowCollectionSDKExtension->getRealms()
+            'choices' => $this->realmManager->getRealms()
         ]);
     }
 

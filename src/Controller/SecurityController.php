@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Form\UserRegistrationForm;
+use App\Manager\UserManager;
 use App\Security\TokenAuthenticator;
-use App\Utils\WowCollectionSDK;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,19 +47,19 @@ class SecurityController extends AbstractController
     /**
      * @Route("/register", name="user_register")
      * @param Request $request
-     * @param WowCollectionSDK $apiSDK
+     * @param UserManager $userManager
      * @param GuardAuthenticatorHandler $guardAuthenticatorHandler
      * @param TokenAuthenticator $authenticator
      * @return Response
      */
-    public function registerAction(Request $request, WowCollectionSDK $apiSDK, GuardAuthenticatorHandler $guardAuthenticatorHandler,
+    public function registerAction(Request $request, UserManager $userManager, GuardAuthenticatorHandler $guardAuthenticatorHandler,
                                    TokenAuthenticator $authenticator)
     {
         $form = $this->createForm(UserRegistrationForm::class);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if (null === $user = $apiSDK->createAccount($form->getData())) {
+            if (null === $user = $userManager->createAccount($form->getData())) {
                 $this->addFlash('danger', 'An error occured while creating your account.');
 
                 return $this->redirectToRoute('user_register');

@@ -1,8 +1,8 @@
 <?php
 namespace App\Security;
 
+use App\Manager\UserManager;
 use App\Security\Core\User\BnetOAuthUser;
-use App\Security\Core\User\UserProvider;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
@@ -21,8 +21,8 @@ use Symfony\Component\Security\Core\Security;
  */
 class TokenAuthenticator extends AbstractGuardAuthenticator implements AuthenticatorInterface
 {
-    /** @var UserProvider $provider */
-    private $provider;
+    /** @var UserManager $userManager */
+    private $userManager;
 
     /** @var RouterInterface $router */
     private $router;
@@ -30,16 +30,15 @@ class TokenAuthenticator extends AbstractGuardAuthenticator implements Authentic
     /** @var UserPasswordEncoderInterface $encoder */
     private $encoder;
 
-
     /**
      * CustomAuthenticator constructor.
-     * @param UserProvider $provider
+     * @param UserManager $userManager
      * @param RouterInterface $router
      * @param UserPasswordEncoderInterface $encoder
      */
-    public function __construct(UserProvider $provider, RouterInterface $router, UserPasswordEncoderInterface $encoder)
+    public function __construct(UserManager $userManager, RouterInterface $router, UserPasswordEncoderInterface $encoder)
     {
-        $this->provider = $provider;
+        $this->userManager = $userManager;
         $this->router = $router;
         $this->encoder = $encoder;
     }
@@ -68,7 +67,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator implements Authentic
      */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        if (null === $user = $this->provider->getApiSDK()->generateBnetOauthUser($credentials)) {
+        if (null === $user = $this->userManager->generateBnetOauthUser($credentials)) {
             throw new AuthenticationException('An authentication exception occurred.');
         }
 

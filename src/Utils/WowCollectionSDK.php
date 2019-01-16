@@ -2,7 +2,6 @@
 
 namespace App\Utils;
 
-use App\Security\Core\User\BnetOAuthUser;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Client;
 use Psr\Cache\CacheItemPoolInterface;
@@ -47,175 +46,15 @@ class WowCollectionSDK
         return $this->client;
     }
 
+    /**
+     * @return string
+     */
+    public function getApiKey(): string
+    {
+        return $this->api_key;
+    }
+
     /* Security */
-
-    /**
-     * @param array $credentials
-     * @return BnetOAuthUser|null
-     */
-    public function generateBnetOauthUser(array $credentials)
-    {
-        if (!isset($credentials['_username'], $credentials['_password'])) {
-            return null;
-        }
-
-        if (null === $response = $this->fetchUserSecurity($credentials['_username'], $credentials['_password'])) {
-            return null;
-        }
-
-        $data = $response['hydra:member'];
-        if (is_array($data) && count($data) > 0) {
-            $user = new BnetOAuthUser();
-            $data = $data[0];
-
-            $user->setUsername($data['username'])
-                ->setBnetAccessToken($data['bnetAccessToken'])
-                ->setBnetBattletag($data['bnetBattletag'])
-                ->setBnetId($data['bnetId'])
-                ->setBnetSub($data['bnetSub'])
-                ->setPassword($data['password'])
-                ->setRoles($data['roles'])
-                ->setEnabled($data['enabled']);
-
-            if (false === $this->jwtConnect($user, $credentials)) {
-                return null;
-            }
-
-            return $user;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param array $credentials
-     * @return BnetOAuthUser|null
-     */
-    public function createAccount(array $credentials)
-    {
-        if (!isset($credentials['username'], $credentials['email'], $credentials['plainPassword'])) {
-            return null;
-        }
-
-        $response = $this->fetchUserSecurity($credentials['username'], $credentials['plainPassword'], false);
-
-        //Existing user
-        if (null !== $response && isset($response['hydra:member']) && count($response['hydra:member']) > 0) {
-            return null;
-        }
-
-        $response = $this->getClient()->request('POST', '/register', [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'json' => [
-                'username' => $credentials['username'],
-                'password' => $credentials['plainPassword'],
-            ],
-        ]);
-
-
-        if (!$this->isStatusValid($response)) {
-            return null;
-        }
-
-        return $this->generateBnetOauthUser([
-            '_username' => $credentials['username'],
-            '_password' => $credentials['plainPassword'],
-        ]);
-    }
-
-    /**
-     * @param BnetOAuthUser $user
-     * @param array $credentials
-     * @return bool
-     */
-    protected function jwtConnect(BnetOAuthUser $user, array $credentials)
-    {
-        return $this->sendToken($user, $credentials);
-    }
-
-    /**
-     * @param BnetOAuthUser $user
-     * @return bool
-     */
-    public function jwtRefreshToken(BnetOAuthUser $user)
-    {
-        return $this->sendToken($user);
-    }
-
-    /**
-     * @param BnetOAuthUser $user
-     * @param array|null $credentials
-     * @return bool
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    private function sendToken(BnetOAuthUser $user, array $credentials = null)
-    {
-        if (is_array($credentials)) {
-            $response = $this->getClient()->request('POST', '/login_check', [
-                'json' => [
-                    'username' => $credentials['_username'],
-                    'password' => $credentials['_password'],
-                ]
-            ]);
-        } else {
-            $response = $this->getClient()->request('POST', '/token/refresh', [
-                'form_params' => ['refresh_token' => $user->getJwtRefreshToken()],
-            ]);
-        }
-
-        if (!$this->isStatusValid($response)) {
-            return false;
-        }
-
-        $response = json_decode($response->getBody()->getContents(), true);
-
-        $user
-            ->setJwtToken($response['token'])
-            ->setJwtRefreshToken($response['refresh_token'])
-            ->resetTokenExpiration();
-
-        return true;
-    }
-
-    /**
-     * @param string $username
-     * @param string $password
-     * @param bool $throwError
-     * @return mixed|null
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function fetchUserSecurity(string $username, string $password, bool $throwError = true)
-    {
-        $response = $this->getClient()->request('GET', '/users/security', [
-            'query' => [
-                'username' => $username,
-                'password' => $password,
-                'api_key' => $this->api_key,
-            ],
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/ld+json'
-            ]
-        ]);
-
-        if (!$this->isStatusValid($response)) {
-            return null;
-        }
-
-        $data = json_decode($response->getBody()->getContents(), true);
-
-        if (null !== $error = $data['hydra:member'][0]['error'] ?? null) {
-            if ($throwError && class_exists($error['type'])) {
-                throw new $error['type']($error['message']);
-            }
-
-            unset($data['hydra:member'][0]);
-        }
-
-        return $data;
-    }
 
     /**
      * @param Response $response
