@@ -14,7 +14,7 @@ class UserEmailType extends AbstractType
     {
         $builder
             ->add('mail_enabled', CheckboxType::class, [
-                'label' => 'Allow emails',
+                'label' => 'Receive email',
                 'help' => 'Allow WowCollection to send you email to remind you of your objective and when it is completed',
                 'required' => false
             ])

@@ -7,6 +7,7 @@ use App\Form\RealmPlayerType;
 use App\Form\UserEmailType;
 use App\Manager\CharacterManager;
 use App\Manager\RealmManager;
+use App\Manager\UserManager;
 use App\Security\Core\User\BnetOAuthUser;
 use App\Utils\CharacterHelper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -83,11 +84,15 @@ class DashboardController extends AbstractController
     /**
      * @Route("/profile", name="dashboard_profile")
      * @param Request $request
+     * @param UserManager $userManager
      * @return RedirectResponse|Response
      */
-    public function profile(Request $request)
+    public function profile(Request $request, UserManager $userManager)
     {
-        $form = $this->createForm(UserEmailType::class);
+        $form = $this->createForm(UserEmailType::class, [
+            'email' => $this->getUser()->getEmail(),
+            'mail_enabled' => $this->getUser()->isMailEnabled(),
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -95,11 +100,11 @@ class DashboardController extends AbstractController
                 ->setEmail($form->get('email')->getData())
                 ->setMailEnabled($form->get('mail_enabled')->getData());
 
-            //TODO transfert to API
-//            $this->getDoctrine()->getManager()->persist($this->getUser());
-//            $this->getDoctrine()->getManager()->flush();
-
-            $this->addFlash('success', 'Informations updated');
+            if (null === $userManager->patchEmailPreferences($this->getUser()->getId(), $form->getData())) {
+                $this->addFlash('danger', 'Error during the information update.');
+            }else {
+                $this->addFlash('success', 'Informations updated');
+            }
 
             return $this->redirectToRoute('dashboard_index');
         }
