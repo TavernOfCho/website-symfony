@@ -21,7 +21,14 @@ class ObjectiveType extends AbstractType
     {
         $builder
             ->add('title', TextType::class)
-            ->add('ending_date', DateType::class)
+            ->add('ending_date', DateType::class, [
+                'widget' => 'single_text',
+                'html5' => false,
+                'attr' => [
+                    'class' => 'date-picker',
+                    "data-datepicker-color" => "primary"
+                ]
+            ])
             ->add('achievement_id', AchievementType::class, [
                 'label' => 'Achievement',
                 'username' => $options['username'],
