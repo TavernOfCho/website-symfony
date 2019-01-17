@@ -38,30 +38,29 @@ class ObjectiveController extends AbstractController
         $this->characterHelper = $characterHelper;
     }
 
-//    /**
-//     * @Route("/", name="objectives_index")
-//     * @CharacterRequired()
-//     *
-//     * @return Response
-//     */
-//    public function index(): Response
-//    {
-//        $objectives = $this->objectiveManager->findAllByBnetId($this->getUser()->getBnetId());
-//
-//        return $this->render('objective/index.html.twig', [
-//            'objectives' => $objectives,
-//        ]);
-//    }
+    /**
+     * @Route("/", name="objectives_index")
+     * @CharacterRequired()
+     *
+     * @return Response
+     */
+    public function index(): Response
+    {
+        $objectives = $this->objectiveManager->findAllForCurrentUser();
+
+        return $this->render('objective/index.html.twig', [
+            'objectives' => $objectives,
+        ]);
+    }
 
     /**
      * @Route("/create", name="objectives_create")
      * @CharacterRequired()
      *
      * @param Request $request
-     * @param ObjectiveManager $objectiveManager
      * @return Response
      */
-    public function create(Request $request, ObjectiveManager $objectiveManager): Response
+    public function create(Request $request): Response
     {
         list('realm' => $realm, 'name' => $username) = $request->attributes->get('_character');
 
@@ -71,7 +70,7 @@ class ObjectiveController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $objective = $form->getData();
             $objective['character'] = ['username' => $username, 'realm' => $realm];
-            $objectiveManager->push($objective);
+            $this->objectiveManager->push($objective);
 
             $this->addFlash('success', 'The objective is now listed !');
 

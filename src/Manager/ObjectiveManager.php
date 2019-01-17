@@ -26,4 +26,23 @@ class ObjectiveManager extends BaseManager
 
         return json_decode($response->getBody()->getContents(), true);
     }
+
+    public function findAllForCurrentUser()
+    {
+        $response = $this->getClient()->request('GET', '/objectives', [
+            'headers' => $this->getBasicJsonHeader(),
+            'query' => [
+                'bnet_user' => $this->getUser()->getId()
+            ]
+        ]);
+
+        if (!$this->getSDK()->isStatusValid($response)) {
+            return null;
+        }
+
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        return $this->paginateOrData($data);
+
+    }
 }

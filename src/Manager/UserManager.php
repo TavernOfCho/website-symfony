@@ -145,7 +145,6 @@ class UserManager extends BaseManager
 
             return $data;
         }, sprintf('users_%s', $id), WowCollectionSDK::SHORT_TIME);
-
     }
 
 

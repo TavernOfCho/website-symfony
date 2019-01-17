@@ -27,9 +27,9 @@
         <tbody>
         {% for objective in objectives %}
             <tr>
-                <td>{{ objective.username }}</td>
+                <td>{{ objective.character }}</td>
                 <td>{{ objective.title }}</td>
-                <td>{{ achievement_label(objective.AchievementId) }}</td>
+                <td>{{ achievement_label(objective.achievementId) }}</td>
                 <td>{{ objective.endingDate|date("m/d/Y") }}</td>
             </tr>
         {% endfor %}

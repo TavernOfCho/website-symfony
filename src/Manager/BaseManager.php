@@ -49,7 +49,9 @@ class BaseManager
      */
     public function paginateOrData(array $data)
     {
-        return isset($data['hydra:view']) ? $this->paginate($data['hydra:view'], $data['hydra:member']) : $data['hydra:member'];
+        return isset($data['hydra:view'], $data['hydra:view']['hydra:next']) ?
+            $this->paginate($data['hydra:view'], $data['hydra:member']) :
+            $data['hydra:member'];
     }
 
     /**

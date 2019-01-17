@@ -24,6 +24,7 @@ class ObjectiveType extends AbstractType
             ->add('ending_date', DateType::class, [
                 'widget' => 'single_text',
                 'html5' => false,
+                'format' => 'dd/MM/yyyy',
                 'attr' => [
                     'class' => 'date-picker',
                     "data-datepicker-color" => "primary"

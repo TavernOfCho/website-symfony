@@ -2,7 +2,6 @@
 
 namespace App\Manager;
 
-
 class AchievementManager extends BaseManager
 {
     /**
@@ -27,7 +26,7 @@ class AchievementManager extends BaseManager
             $data = json_decode($response->getBody()->getContents(), true);
 
             return $this->paginateOrData($data);
-        }, sprintf('character_achievements_%s_%s', $player, $realm));
+        }, sprintf('character_achievements_%s_%s', $player, $realm), 30);
     }
 
     /**
@@ -61,7 +60,7 @@ class AchievementManager extends BaseManager
             $data = json_decode($response->getBody()->getContents(), true);
 
             return $this->paginateOrData($data);
-        }, sprintf('character_completed_achievements_%s_%s', $player, $realm));
+        }, sprintf('character_completed_achievements_%s_%s', $player, $realm), 30);
     }
 
     /**
@@ -71,6 +70,23 @@ class AchievementManager extends BaseManager
     public function listCharacterCompletedAchievements(array $achievements)
     {
         return array_flip(array_column($achievements, 'id'));
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getAchievement(int $id)
+    {
+        $response = $this->getClient()->request('GET', sprintf('/achievements/%s', $id), [
+            'headers' => $this->getBasicJsonHeader()
+        ]);
+
+        if (!$this->getSDK()->isStatusValid($response)) {
+            return null;
+        }
+
+        return json_decode($response->getBody()->getContents(), true);
     }
 
 
