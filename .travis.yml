@@ -5,14 +5,6 @@ language: python
 services:
   - docker
 
-
-env:
-  - OPENSHIFT_SERVER=https://api.starter-us-west-1.openshift.com
-  - OPENSHIFT_PROJECT=wow-collection
-  - APP=website
-  - APP_HOST=website.wow_collection.fr
-
-
 before_script:
   - cp -v engine/deployment/Dockerfile .
   - docker run -v $PWD:/app -w /app openshift/origin-cli oc login "$OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN"
