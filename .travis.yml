@@ -6,11 +6,11 @@ services:
   - docker
 
 
-variables:
-  OPENSHIFT_SERVER: https://api.starter-us-west-1.openshift.com
-  OPENSHIFT_PROJECT: wow-collection
-  APP: website
-  APP_HOST: website.wow_collection.fr
+env:
+  - OPENSHIFT_SERVER=https://api.starter-us-west-1.openshift.com
+  - OPENSHIFT_PROJECT=wow-collection
+  - APP=website
+  - APP_HOST=website.wow_collection.fr
 
 
 before_script:
