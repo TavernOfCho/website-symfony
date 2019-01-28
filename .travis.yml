@@ -7,8 +7,8 @@ services:
 
 before_script:
   - cp -v engine/deployment/Dockerfile .
-  - docker run -v $PWD:/app -w /app openshift/origin-cli oc login "$OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN"
-  - docker run -v $PWD:/app -w /app openshift/origin-cli oc project "$OPENSHIFT_PROJECT" 2> /dev/null
+  - docker run -v $PWD:/app -w /app openshift/origin oc login "$OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN"
+  - docker run -v $PWD:/app -w /app openshift/origin oc project "$OPENSHIFT_PROJECT" 2> /dev/null
   - chmod +x ./engine/deployment/deploy.sh
 
 
