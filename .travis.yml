@@ -22,20 +22,19 @@ script:
 #      chmod +x ./engine/deployment/deploy.sh \
 #      ./engine/deployment/deploy.sh
 
+before_deploy:
+  - docker build -t origin-cli-docker engine/deployment/openshift/
+
 deploy:
   provider: script
-  script:
-#    - cp -v engine/deployment/Dockerfile .
-    - docker build -t origin-cli-docker engine/deployment/openshift/
-    - docker run -v $PWD:/app -w /app
-      -v /var/run/docker.sock:/var/run/docker.sock
-      -e OPENSHIFT_SERVER=$OPENSHIFT_SERVER
-      -e OPENSHIFT_TOKEN=$OPENSHIFT_TOKEN
-      -e OPENSHIFT_PROJECT=$OPENSHIFT_PROJECT
-      -e OPENSHIFT_TOKEN=$OPENSHIFT_TOKEN
-      -e APP=$APP
-      origin-cli-docker
-      echo "test"
-
+  script: docker run -v $PWD:/app -w /app
+          -v /var/run/docker.sock:/var/run/docker.sock
+          -e OPENSHIFT_SERVER=$OPENSHIFT_SERVER
+          -e OPENSHIFT_TOKEN=$OPENSHIFT_TOKEN
+          -e OPENSHIFT_PROJECT=$OPENSHIFT_PROJECT
+          -e OPENSHIFT_TOKEN=$OPENSHIFT_TOKEN
+          -e APP=$APP
+          origin-cli-docker
+          echo "test"
   on:
     branch: travis
