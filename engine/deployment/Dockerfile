@@ -71,6 +71,10 @@ RUN yarn run build
 
 # CLEAN UP
 
+COPY engine/deployment/docker-php-entrypoint /usr/local/bin/
+COPY engine/deployment/apache2-foreground /usr/local/bin/
+
+
 USER root
 
 RUN rm -rf /var/lib/apt/lists/* && \
@@ -82,11 +86,7 @@ RUN rm -rf /tmp/* && \
 
 # ENTRYPOINT
 
-COPY COPY docker-php-ext-* docker /usr/local/bin/
-
 ENTRYPOINT ["docker-php-entrypoint"]
-
-COPY apache2-foreground /usr/local/bin/
 
 EXPOSE 80
 CMD ["apache2-foreground"]
