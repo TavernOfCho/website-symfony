@@ -41,7 +41,6 @@ RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime && echo "Europe/Paris" > 
 # APACHE CONFIGURATION
 
 RUN rm /etc/apache2/sites-enabled/000-default.conf
-COPY engine/deployment/apache2-foreground /usr/local/bin/
 COPY engine/deployment/website.conf /etc/apache2/sites-enabled/
 
 RUN a2enmod rewrite
@@ -58,10 +57,9 @@ RUN npm install -g yarn
 
 # PROJECT CONFIGURATION
 
-WORKDIR /app
-COPY . /app
+COPY . /var/www/html
 
-RUN chown -R www-data:www-data /app
+RUN chown -R www-data:www-data /var/www/html
 USER www-data
 
 #RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-suggest
@@ -79,9 +77,16 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt-get clean
 
 RUN rm -rf /tmp/* && \
-    rm -rf /app/engine
+    rm -rf /var/www/html/engine
 
 # ENTRYPOINT
 
+COPY COPY docker-php-ext-* docker /usr/local/bin/
+
+ENTRYPOINT ["docker-php-entrypoint"]
+
+COPY apache2-foreground /usr/local/bin/
+WORKDIR /var/www/html
+
 EXPOSE 80
-CMD ["/usr/local/bin/apache2-foreground"]
+CMD ["apache2-foreground"]
