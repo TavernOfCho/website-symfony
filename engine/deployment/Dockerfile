@@ -72,7 +72,12 @@ RUN yarn run build
 # CLEAN UP
 
 COPY engine/deployment/docker-php-entrypoint /usr/local/bin/
+RUN chmod 777 /usr/local/bin/docker-php-entrypoint \
+    && ln -s /usr/local/bin/docker-php-entrypoint /
+
 COPY engine/deployment/apache2-foreground /usr/local/bin/
+RUN chmod 777 /usr/local/bin/apache2-foreground \
+    && ln -s /usr/local/bin/apache2-foreground /
 
 
 USER root
@@ -84,11 +89,7 @@ RUN rm -rf /var/lib/apt/lists/* && \
 RUN rm -rf /tmp/* && \
     rm -rf /var/www/html/engine
 
-RUN chmod 777 /usr/local/bin/docker-entrypoint \
-    && ln -s /usr/local/bin/docker-entrypoint /
 
-RUN chmod 777 /usr/local/bin/apache2-foreground \
-    && ln -s /usr/local/bin/apache2-foreground /
 
 # ENTRYPOINT
 
