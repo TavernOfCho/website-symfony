@@ -84,4 +84,4 @@ RUN rm -rf /tmp/* && \
 # ENTRYPOINT
 
 EXPOSE 80
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/apache2-foreground"]
