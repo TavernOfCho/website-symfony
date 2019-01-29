@@ -37,5 +37,5 @@ deploy:
       origin-cli-docker
       echo "test"
 
-#  on:
-#    branch: master
+  on:
+    branch: travis
