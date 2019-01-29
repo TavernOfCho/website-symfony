@@ -5,8 +5,8 @@ language: python
 services:
   - docker
 
-#script:
-#  - cp -v engine/deployment/Dockerfile .
+script:
+  - cp -v engine/deployment/Dockerfile .
 #  - docker build -t origin-cli-docker engine/deployment/openshift/
 #  - docker run -v $PWD:/app -w /app
 #      -v /var/run/docker.sock:/var/run/docker.sock
@@ -25,7 +25,7 @@ services:
 deploy:
   provider: script
   script:
-    - cp -v engine/deployment/Dockerfile .
+#    - cp -v engine/deployment/Dockerfile .
     - docker build -t origin-cli-docker engine/deployment/openshift/
     - docker run -v $PWD:/app -w /app
       -v /var/run/docker.sock:/var/run/docker.sock
