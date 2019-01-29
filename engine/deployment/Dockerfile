@@ -1,100 +1,40 @@
-FROM ubuntu:bionic
-#LABEL maintainer="LiveXP <dev@livexp.fr>"
+## Composer
+FROM composer:latest AS composer
 
-ENV DEBIAN_FRONTEND="noninteractive"
+COPY . /app/
 
-ENV COMPOSER_HOME="/tmp" \
-    COMPOSER_ALLOW_SUPERUSER=1 \
-    LDAPTLS_REQCERT="never"
+ENV APP_ENV prod
+RUN composer install --no-dev --optimize-autoloader
 
-ENV APP_ENV="dev"
+# NodeJS (Webpack Encore)
+FROM node:8 AS node
 
-# DEPENDENCIES
+COPY --from=composer /app /app
+WORKDIR /app
 
-RUN apt-get update -q && \
-    apt-get install --no-install-recommends -qy \
-        ca-certificates \
-        curl \
-        apache2 \
-        libapache2-mod-php7.2 \
-        php7.2 \
-        php7.2-curl \
-        php7.2-ldap \
-        php7.2-apcu \
-        php7.2-bz2 \
-        php7.2-gd \
-        php7.2-gmp \
-        php7.2-intl \
-        php7.2-yaml \
-        php7.2-common \
-        php7.2-json \
-        php7.2-mbstring \
-        php7.2-phar \
-        php7.2-xml \
-        php7.2-zip \
-        php7.2-xdebug
+RUN yarn install
+RUN yarn run build
 
-# SYSTEM CONFIGURATION
+## Build
+FROM php:7.2-apache AS apache
 
-RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime && echo "Europe/Paris" > /etc/timezone
+ENV APP_ENV prod
 
-# APACHE CONFIGURATION
+RUN pecl install apcu
+RUN echo "extension=apcu.so" > /usr/local/etc/php/conf.d/apcu.ini
+
+RUN docker-php-ext-install  opcache \
+ && a2enmod rewrite
 
 RUN rm /etc/apache2/sites-enabled/000-default.conf
 COPY engine/deployment/website.conf /etc/apache2/sites-enabled/
 
-RUN a2enmod rewrite
-
-# PHP CONFIGURATION
-
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# NODEJS CONFIGURATION
-
-RUN apt-get install -y nodejs npm
-RUN npm install -g yarn
-
-
-# PROJECT CONFIGURATION
-
+COPY --from=node /app /var/www/html
 COPY . /var/www/html
+
 WORKDIR /var/www/html
 
-RUN chown -R www-data:www-data /var/www/html
-USER www-data
+RUN chmod -R 775 .
+RUN chown -R www-data:www-data .
 
-#RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-suggest
-RUN composer install --no-interaction --no-progress --no-suggest
-RUN rm -rf node_modules
-RUN yarn install
-RUN yarn run build
-
-
-USER root
-
-COPY engine/deployment/docker-php-entrypoint /usr/local/bin/
-RUN chmod 777 /usr/local/bin/docker-php-entrypoint \
-    && ln -s /usr/local/bin/docker-php-entrypoint /
-
-COPY engine/deployment/apache2-foreground /usr/local/bin/
-RUN chmod 777 /usr/local/bin/apache2-foreground \
-    && ln -s /usr/local/bin/apache2-foreground /
-
-
-# CLEAN UP
-
-RUN rm -rf /var/lib/apt/lists/* && \
-    apt-get autoremove -y && \
-    apt-get clean
-
-RUN rm -rf /tmp/* && \
-    rm -rf /var/www/html/engine
-
-
-
-# ENTRYPOINT
-
-ENTRYPOINT ["docker-php-entrypoint"]
-
-EXPOSE 80
-CMD ["apache2-foreground"]
+RUN php bin/console cache:warmup
