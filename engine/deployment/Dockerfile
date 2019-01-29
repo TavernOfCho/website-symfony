@@ -58,6 +58,7 @@ RUN npm install -g yarn
 # PROJECT CONFIGURATION
 
 COPY . /var/www/html
+WORKDIR /var/www/html
 
 RUN chown -R www-data:www-data /var/www/html
 USER www-data
@@ -86,7 +87,6 @@ COPY COPY docker-php-ext-* docker /usr/local/bin/
 ENTRYPOINT ["docker-php-entrypoint"]
 
 COPY apache2-foreground /usr/local/bin/
-WORKDIR /var/www/html
 
 EXPOSE 80
 CMD ["apache2-foreground"]
