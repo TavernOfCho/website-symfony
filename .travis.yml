@@ -5,24 +5,10 @@ language: python
 services:
   - docker
 
-script:
-  - cp -v engine/deployment/Dockerfile .
-#  - docker build -t origin-cli-docker engine/deployment/openshift/
-#  - docker run -v $PWD:/app -w /app
-#      -v /var/run/docker.sock:/var/run/docker.sock
-#      -e OPENSHIFT_SERVER=$OPENSHIFT_SERVER
-#      -e OPENSHIFT_TOKEN=$OPENSHIFT_TOKEN
-#      -e OPENSHIFT_PROJECT=$OPENSHIFT_PROJECT
-#      -e OPENSHIFT_TOKEN=$OPENSHIFT_TOKEN
-#      -e APP=$APP
-#      origin-cli-docker
-#      echo "test"
-    #  - >
-#    $DOCKER_IMAGE_RUN \
-#      chmod +x ./engine/deployment/deploy.sh \
-#      ./engine/deployment/deploy.sh
+script: []
 
 before_deploy:
+  - cp -v engine/deployment/Dockerfile .
   - docker build -t origin-cli-docker engine/deployment/openshift/
 
 deploy:
@@ -35,6 +21,6 @@ deploy:
           -e OPENSHIFT_TOKEN=$OPENSHIFT_TOKEN
           -e APP=$APP
           origin-cli-docker
-          echo "test"
+          chmod +x ./engine/deployment/deploy.sh && ./engine/deployment/deploy.sh
   on:
     branch: travis
