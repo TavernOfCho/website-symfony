@@ -17,7 +17,6 @@ before_script:
       -e APP_HOST=$APP_HOST \
       origin-cli-docker \
       echo "test"
-    -
     #  - >
 #    $DOCKER_IMAGE_RUN \
 #      chmod +x ./engine/deployment/deploy.sh \
