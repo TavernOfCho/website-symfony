@@ -69,7 +69,8 @@ RUN rm -rf node_modules
 RUN yarn install
 RUN yarn run build
 
-# CLEAN UP
+
+USER root
 
 COPY engine/deployment/docker-php-entrypoint /usr/local/bin/
 RUN chmod 777 /usr/local/bin/docker-php-entrypoint \
@@ -80,7 +81,7 @@ RUN chmod 777 /usr/local/bin/apache2-foreground \
     && ln -s /usr/local/bin/apache2-foreground /
 
 
-USER root
+# CLEAN UP
 
 RUN rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove -y && \
