@@ -11,7 +11,7 @@ script:
 before_deploy:
   - cp -v engine/deployment/Dockerfile .
   - docker build -t origin-cli-docker engine/deployment/openshift/
-  - chmod +x /app/engine/deployment/deploy.sh
+  - chmod +x engine/deployment/deploy.sh
 
 deploy:
   provider: script
