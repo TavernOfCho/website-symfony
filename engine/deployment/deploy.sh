@@ -1,7 +1,11 @@
 #!/bin/sh
 
-docker run -v $PWD:/app -w /app openshift/origin oc get services $APP 2> /dev/null || oc new-app . --name=$APP --strategy=docker
-docker run -v $PWD:/app -w /app openshift/origin oc new-build . --name=$APP --strategy=docker --output=yaml | oc apply -f -
-docker run -v $PWD:/app -w /app openshift/origin oc cancel-build bc/$APP && oc start-build $APP --from-dir=. --follow
-docker run -v $PWD:/app -w /app openshift/origin oc get routes $APP 2> /dev/null || oc expose service $APP --hostname=$APP_HOST
+oc login "$OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN"
+DOCKER_IMAGE_NAME=$OPENSHIFT_PROJECT/$APP
 
+docker login -u `oc whoami` -p `oc whoami -t` $OPENSHIFT_REGISTRY
+docker build -t $DOCKER_IMAGE_NAME .
+docker tag $DOCKER_IMAGE_NAME $OPENSHIFT_REGISTRY/$DOCKER_IMAGE_NAME
+docker push $OPENSHIFT_REGISTRY/$DOCKER_IMAGE_NAME
+
+oc get services $APP 2> /dev/null || oc new-app . --name=$APP

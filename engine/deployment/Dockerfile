@@ -41,8 +41,8 @@ RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime && echo "Europe/Paris" > 
 # APACHE CONFIGURATION
 
 RUN rm /etc/apache2/sites-enabled/000-default.conf
-COPY docker/staging/apache2-foreground /usr/local/bin/
-COPY docker/staging/website.conf /etc/apache2/sites-enabled/
+COPY engine/deployment/apache2-foreground /usr/local/bin/
+COPY engine/deployment/website.conf /etc/apache2/sites-enabled/
 
 RUN a2enmod rewrite
 
@@ -64,7 +64,8 @@ COPY . /app
 RUN chown -R www-data:www-data /app
 USER www-data
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-suggest
+#RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-suggest
+RUN composer install --no-interaction --no-progress --no-suggest
 RUN rm -rf node_modules
 RUN yarn install
 RUN yarn run build
