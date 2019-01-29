@@ -6,6 +6,8 @@ COPY . /app/
 ENV APP_ENV prod
 RUN composer install --no-dev --optimize-autoloader
 
+RUN php bin/console cache:warmup
+
 # NodeJS (Webpack Encore)
 FROM node:8 AS node
 
@@ -36,5 +38,3 @@ WORKDIR /var/www/html
 
 RUN chmod -R 775 .
 RUN chown -R www-data:www-data .
-
-RUN php bin/console cache:warmup
