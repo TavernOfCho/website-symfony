@@ -22,6 +22,6 @@ deploy:
           -e OPENSHIFT_TOKEN=$OPENSHIFT_TOKEN
           -e APP=$APP
           origin-cli-docker
-          chmod +x ./engine/deployment/deploy.sh && ./engine/deployment/deploy.sh
+          chmod +x /app/engine/deployment/deploy.sh && /app/engine/deployment/deploy.sh
   on:
     branch: travis
