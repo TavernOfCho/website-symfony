@@ -1,6 +1,6 @@
 #!/bin/sh
 
-oc login "$OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN"
+oc login "$OPENSHIFT_SERVER" --token="$OPENSHIFT_TOKEN" 2> /dev/null
 DOCKER_IMAGE_NAME=$OPENSHIFT_PROJECT/$APP
 
 docker login -u `oc whoami` -p `oc whoami -t` $OPENSHIFT_REGISTRY
