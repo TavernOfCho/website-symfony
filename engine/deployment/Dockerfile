@@ -84,6 +84,12 @@ RUN rm -rf /var/lib/apt/lists/* && \
 RUN rm -rf /tmp/* && \
     rm -rf /var/www/html/engine
 
+RUN chmod 777 /usr/local/bin/docker-entrypoint \
+    && ln -s /usr/local/bin/docker-entrypoint /
+
+RUN chmod 777 /usr/local/bin/apache2-foreground \
+    && ln -s /usr/local/bin/apache2-foreground /
+
 # ENTRYPOINT
 
 ENTRYPOINT ["docker-php-entrypoint"]
