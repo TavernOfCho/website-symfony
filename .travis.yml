@@ -5,7 +5,7 @@ language: python
 services:
   - docker
 
-before_script:
+script:
   - cp -v engine/deployment/Dockerfile .
   - docker build -t origin-cli-docker engine/deployment/openshift/
   - docker run -v $PWD:/app -w /app \
@@ -14,7 +14,6 @@ before_script:
       -e OPENSHIFT_TOKEN=$OPENSHIFT_TOKEN \
       -e OPENSHIFT_PROJECT=$OPENSHIFT_PROJECT \
       -e APP=$APP \
-      -e APP_HOST=$APP_HOST \
       origin-cli-docker \
       echo "test"
     #  - >
@@ -22,8 +21,8 @@ before_script:
 #      chmod +x ./engine/deployment/deploy.sh \
 #      ./engine/deployment/deploy.sh
 
-deploy:
-  provider: script
-  script: ./engine/deployment/deploy.sh
-  on:
-    branch: master
+#deploy:
+#  provider: script
+#  script: ./engine/deployment/deploy.sh
+#  on:
+#    branch: master
