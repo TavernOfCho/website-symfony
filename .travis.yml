@@ -5,7 +5,8 @@ language: python
 services:
   - docker
 
-script: []
+script:
+  - echo "TODO"
 
 before_deploy:
   - cp -v engine/deployment/Dockerfile .
