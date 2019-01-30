@@ -50,4 +50,4 @@ deploy:
     app: wow-collection
     on:
       repo: WowCollection/website
-branch: travis-heroku
+      branch: travis-heroku
