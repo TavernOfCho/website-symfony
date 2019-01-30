@@ -1,29 +1,53 @@
-sudo: required
+#sudo: required
+#
+#language: python
+#
+#services:
+#  - docker
+#
+#script:
+#  - echo "TODO"
+#
+#before_deploy:
+#  - cp -v engine/deployment/Dockerfile .
+#  - docker build -t heroku-cli-docker engine/deployment/heroku/ #To replace with mapsred/heroku-cli-docker
+#  - chmod +x engine/deployment/deploy.sh
+#
+#deploy:
+#  provider: script
+#  skip_cleanup: true
+#  script: docker run -v $PWD:/app -w /app
+#          -v /var/run/docker.sock:/var/run/docker.sock
+#          -e HEROKU_API_KEY=$HEROKU_API_KEY
+#          -e HEROKU_PROJECT=$HEROKU_PROJECT
+#          -e APP=$APP
+#          heroku-cli-docker
+#          /app/engine/deployment/deploy.sh
+#  on:
+#    branch: travis
 
-language: python
+language: php
+php:
+  - '7.2'
 
-services:
-  - docker
+sudo: false
+
+before-install:
+  - composer self-update
+
+install:
+  - cp .env.dist .env
+  - composer install
 
 script:
-  - echo "TODO"
+  - echo "Todo"
 
-before_deploy:
-  - cp -v engine/deployment/Dockerfile .
-  - docker build -t origin-cli-docker engine/deployment/openshift/ #To replace with mapsred/origin-cli-docker
-  - chmod +x engine/deployment/deploy.sh
 
 deploy:
-  provider: script
-  skip_cleanup: true
-  script: docker run -v $PWD:/app -w /app
-          -v /var/run/docker.sock:/var/run/docker.sock
-          -e OPENSHIFT_SERVER=$OPENSHIFT_SERVER
-          -e OPENSHIFT_TOKEN=$OPENSHIFT_TOKEN
-          -e OPENSHIFT_PROJECT=$OPENSHIFT_PROJECT
-          -e OPENSHIFT_REGISTRY=$OPENSHIFT_REGISTRY
-          -e APP=$APP
-          origin-cli-docker
-          /app/engine/deployment/deploy.sh
-  on:
-    branch: travis
+  - provider: heroku
+    api_key:
+      secure: M1pgX435PCvJbHLvLrHfAYTEwDBN9pksq64c0UmtmrzpKeWbKt97iZojLK924zBMzQjaiVkggtDd/LkVPTkjN+09y3tYtuxJfhMUbRCt93hOo6ZUwIDKIyncgrHZRK8vBznFevqtmW1JHwxmCmO4AHaB7CY10e6uUwciKTb7FcX3MRUTLgjWCT52ui3pfzgFt/t5KGL1PjhUGBNOUQDA2B9xc8flgkmEAj61z/sWl3KSmlo6LSndmuMkfU5mBDKd2ACsdzN5FoqfEkl62gnDNzWA17KOLbaEzHfPatcXUDsooHR0WXSUAA8bVkWJNGqmiWsmK3W0umzAYagsyKEB7BrpccqVqVWtH2yWAyNP05d22UlWYDVspLrfzP4FfAF0CpsxlKIBN9DjJwpy/JzZprFREHjuviFg/eZbiu2qQHLFYWyAkpicpjb0bftluzClX4vBjwywpRQA0ZL41Nh0xjcqdYSw2BL0b8qs17WthZY+la+wmY1nnrMaE38J8OgWcZhQBZk0FKa9Bku7TCC/kFvA5KEeYwtkmsSzwpe9Kntizr5nvAKTwpyaPvn2QZGS07VBl9RJVFB/cXJyRL8LZM4QmpdykN91jIBfDg5yIEMuBL4CEtWDXQgCakTjLEOKn0Xe7pXYxVe1MaGOMoWdwoTHc61ScT2v4JNrPkcYwnc=
+    app: wow-collection
+    on:
+      repo: WowCollection/website
+branch: travis-heroku
