@@ -20,6 +20,8 @@ RUN yarn run build
 ## Build
 FROM php:7.2-apache AS apache
 
+EXPOSE 8080
+
 ENV APP_ENV prod
 
 RUN pecl install apcu
@@ -39,10 +41,8 @@ WORKDIR /var/www/html
 RUN chmod -R 775 .
 RUN chown -R www-data:www-data .
 
-USER www-data
-
-EXPOSE 8080
-
 ENTRYPOINT []
 CMD sed -i "s/80/8080/g" /etc/apache2/sites-enabled/website.conf /etc/apache2/ports.conf && \
     docker-php-entrypoint apache2-foreground
+
+USER www-data
