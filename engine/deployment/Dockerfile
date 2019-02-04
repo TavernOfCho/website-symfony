@@ -39,4 +39,4 @@ WORKDIR /var/www/html
 RUN chmod -R 775 .
 RUN chown -R www-data:www-data .
 
-USER 1001
+USER www-data
