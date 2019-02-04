@@ -41,8 +41,11 @@ WORKDIR /var/www/html
 RUN chmod -R 775 .
 RUN chown -R www-data:www-data .
 
-ENTRYPOINT []
-CMD sed -i "s/80/8080/g" /etc/apache2/sites-enabled/website.conf /etc/apache2/ports.conf && \
-    docker-php-entrypoint apache2-foreground
+USER root
+RUN sed -i "s/80/8080/g" /etc/apache2/sites-enabled/website.conf /etc/apache2/ports.conf
 
 USER www-data
+
+ENTRYPOINT []
+CMD docker-php-entrypoint apache2-foreground
+
